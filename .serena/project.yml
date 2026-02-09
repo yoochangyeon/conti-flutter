@@ -1,0 +1,46 @@
+# the name by which the project can be referenced within Serena
+project_name: "Conti Flutter"
+
+
+# list of languages for which language servers are started; choose from:
+#   al                  bash                clojure             cpp                 csharp
+#   csharp_omnisharp    dart                elixir              elm                 erlang
+#   fortran             fsharp              go                  groovy              haskell
+#   java                julia               kotlin              lua                 markdown
+#   matlab              nix                 pascal              perl                php
+#   powershell          python              python_jedi         r                   rego
+#   ruby                ruby_solargraph     rust                scala               swift
+#   terraform           toml                typescript          typescript_vts      vue
+#   yaml                zig
+languages:
+- dart
+
+# the encoding used by text files in the project
+encoding: "utf-8"
+
+# whether to use project's .gitignore files to ignore files
+ignore_all_files_in_gitignore: true
+
+# list of additional paths to ignore in all projects
+ignored_paths: []
+
+# whether the project is in read-only mode
+read_only: false
+
+# list of tool names to exclude
+excluded_tools: []
+
+# list of tools to include that would otherwise be disabled
+included_optional_tools: []
+
+# fixed set of tools to use as the base tool set
+fixed_tools: []
+
+# list of mode names to that are always to be included in the set of active modes
+base_modes:
+
+# list of mode names that are to be activated by default
+default_modes:
+
+# initial prompt for the project
+initial_prompt: ""
