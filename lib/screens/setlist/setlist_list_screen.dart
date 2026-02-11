@@ -3,6 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:conti_app/providers/providers.dart';
+import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
+import '../../widgets/conti_card.dart';
+import '../../widgets/conti_empty_state.dart';
+import '../../widgets/conti_skeleton.dart';
 
 class SetlistListScreen extends ConsumerStatefulWidget {
   final int teamId;
@@ -18,7 +23,8 @@ class _SetlistListScreenState extends ConsumerState<SetlistListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final params = SetlistListParams(teamId: widget.teamId, worshipType: _worshipType);
+    final params = SetlistListParams(
+        teamId: widget.teamId, worshipType: _worshipType);
     final setlistsAsync = ref.watch(setlistsProvider(params));
     final theme = Theme.of(context);
     final dateFormat = DateFormat('yyyy.MM.dd (E)', 'ko');
@@ -28,97 +34,121 @@ class _SetlistListScreenState extends ConsumerState<SetlistListScreen> {
         title: const Text('콘티'),
         actions: [
           PopupMenuButton<String?>(
-            icon: const Icon(Icons.filter_list),
+            icon: Icon(
+              Icons.filter_list_rounded,
+              color: _worshipType != null
+                  ? theme.colorScheme.primary
+                  : null,
+            ),
             onSelected: (v) => setState(() => _worshipType = v),
             itemBuilder: (context) => [
               const PopupMenuItem(value: null, child: Text('전체')),
-              const PopupMenuItem(value: '주일 1부 예배', child: Text('주일 1부 예배')),
-              const PopupMenuItem(value: '주일 2부 예배', child: Text('주일 2부 예배')),
+              const PopupMenuItem(
+                  value: '주일 1부 예배', child: Text('주일 1부 예배')),
+              const PopupMenuItem(
+                  value: '주일 2부 예배', child: Text('주일 2부 예배')),
               const PopupMenuItem(value: '수요 예배', child: Text('수요 예배')),
-              const PopupMenuItem(value: '금요 기도회', child: Text('금요 기도회')),
+              const PopupMenuItem(
+                  value: '금요 기도회', child: Text('금요 기도회')),
               const PopupMenuItem(value: '청년 예배', child: Text('청년 예배')),
             ],
           ),
         ],
       ),
       body: setlistsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Padding(
+          padding: EdgeInsets.only(top: AppSpacing.lg),
+          child: ContiListSkeleton(itemCount: 5, itemHeight: 80),
+        ),
         error: (e, _) => Center(child: Text('오류: $e')),
         data: (paged) {
           if (paged.content.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.queue_music, size: 64, color: theme.colorScheme.outline),
-                  const SizedBox(height: 16),
-                  Text('등록된 콘티가 없습니다', style: theme.textTheme.bodyLarge),
-                ],
-              ),
+            return ContiEmptyState(
+              icon: Icons.queue_music_rounded,
+              title: '등록된 콘티가 없습니다',
+              subtitle: '새 콘티를 추가하여 세트리스트를 관리하세요',
+              actionLabel: '콘티 추가',
+              onAction: () =>
+                  context.push('/teams/${widget.teamId}/setlists/create'),
             );
           }
           return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(setlistsProvider(params)),
+            onRefresh: () async =>
+                ref.invalidate(setlistsProvider(params)),
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               itemCount: paged.content.length,
               itemBuilder: (context, index) {
                 final setlist = paged.content[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: () => context.push('/teams/${widget.teamId}/setlists/${setlist.id}'),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  setlist.displayTitle,
-                                  style: theme.textTheme.titleMedium,
-                                ),
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                  child: ContiCard(
+                    onTap: () => context.push(
+                        '/teams/${widget.teamId}/setlists/${setlist.id}'),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                setlist.displayTitle,
+                                style: theme.textTheme.titleSmall,
                               ),
-                              Text(
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                gradient: AppTheme.primaryGradient,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
                                 '${setlist.songCount}곡',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.primary,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(Icons.calendar_today_rounded,
+                                size: 14,
+                                color:
+                                    theme.colorScheme.onSurfaceVariant),
+                            const SizedBox(width: 4),
+                            Text(
+                              dateFormat.format(setlist.worshipDate),
+                              style: theme.textTheme.bodySmall,
+                            ),
+                            if (setlist.worshipType != null) ...[
+                              const SizedBox(width: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary
+                                      .withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  setlist.worshipType!,
+                                  style:
+                                      theme.textTheme.labelSmall?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ],
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(Icons.calendar_today, size: 14, color: theme.colorScheme.onSurfaceVariant),
-                              const SizedBox(width: 4),
-                              Text(
-                                dateFormat.format(setlist.worshipDate),
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                              if (setlist.worshipType != null) ...[
-                                const SizedBox(width: 12),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.surfaceContainerHighest,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    setlist.worshipType!,
-                                    style: theme.textTheme.labelSmall,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -128,8 +158,9 @@ class _SetlistListScreenState extends ConsumerState<SetlistListScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/teams/${widget.teamId}/setlists/create'),
-        child: const Icon(Icons.add),
+        onPressed: () =>
+            context.push('/teams/${widget.teamId}/setlists/create'),
+        child: const Icon(Icons.add_rounded),
       ),
     );
   }

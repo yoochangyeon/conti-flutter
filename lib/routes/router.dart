@@ -12,6 +12,7 @@ import 'package:conti_app/screens/team/team_members_screen.dart';
 import 'package:conti_app/screens/song/song_list_screen.dart';
 import 'package:conti_app/screens/song/song_detail_screen.dart';
 import 'package:conti_app/screens/song/song_form_screen.dart';
+import 'package:conti_app/screens/song/song_section_editor.dart';
 import 'package:conti_app/screens/setlist/setlist_list_screen.dart';
 import 'package:conti_app/screens/setlist/setlist_detail_screen.dart';
 import 'package:conti_app/screens/setlist/setlist_form_screen.dart';
@@ -103,6 +104,14 @@ final routerProvider = Provider<GoRouter>((ref) {
               final teamId = int.parse(state.pathParameters['teamId']!);
               final songId = int.parse(state.pathParameters['songId']!);
               return SongFormScreen(teamId: teamId, songId: songId);
+            },
+          ),
+          GoRoute(
+            path: 'songs/:songId/structure/edit',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final songId = int.parse(state.pathParameters['songId']!);
+              return SongSectionEditorScreen(teamId: teamId, songId: songId);
             },
           ),
           // Setlist routes

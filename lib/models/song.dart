@@ -43,6 +43,7 @@ class SongDetailResponse {
   final String? musicUrl;
   final List<SongFileResponse> files;
   final int usageCount;
+  final List<SongSectionResponse> sections;
 
   SongDetailResponse({
     required this.id,
@@ -57,6 +58,7 @@ class SongDetailResponse {
     this.musicUrl,
     required this.files,
     required this.usageCount,
+    required this.sections,
   });
 
   factory SongDetailResponse.fromJson(Map<String, dynamic> json) {
@@ -76,8 +78,72 @@ class SongDetailResponse {
               .toList() ??
           [],
       usageCount: json['usageCount'] as int? ?? 0,
+      sections: (json['sections'] as List?)
+              ?.map((e) =>
+                  SongSectionResponse.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
+}
+
+class SongSectionResponse {
+  final int id;
+  final String sectionType;
+  final int orderIndex;
+  final String? label;
+  final String? chords;
+  final int? buildUpLevel;
+  final String? memo;
+
+  SongSectionResponse({
+    required this.id,
+    required this.sectionType,
+    required this.orderIndex,
+    this.label,
+    this.chords,
+    this.buildUpLevel,
+    this.memo,
+  });
+
+  factory SongSectionResponse.fromJson(Map<String, dynamic> json) {
+    return SongSectionResponse(
+      id: json['id'] as int,
+      sectionType: json['sectionType'] as String,
+      orderIndex: json['orderIndex'] as int,
+      label: json['label'] as String?,
+      chords: json['chords'] as String?,
+      buildUpLevel: json['buildUpLevel'] as int?,
+      memo: json['memo'] as String?,
+    );
+  }
+}
+
+class SongSectionRequest {
+  final String sectionType;
+  final int orderIndex;
+  final String? label;
+  final String? chords;
+  final int? buildUpLevel;
+  final String? memo;
+
+  SongSectionRequest({
+    required this.sectionType,
+    required this.orderIndex,
+    this.label,
+    this.chords,
+    this.buildUpLevel,
+    this.memo,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'sectionType': sectionType,
+        'orderIndex': orderIndex,
+        if (label != null) 'label': label,
+        if (chords != null) 'chords': chords,
+        if (buildUpLevel != null) 'buildUpLevel': buildUpLevel,
+        if (memo != null) 'memo': memo,
+      };
 }
 
 class SongFileResponse {
@@ -158,6 +224,7 @@ class SongCreateRequest {
   final String? youtubeUrl;
   final String? musicUrl;
   final List<String>? tags;
+  final List<SongSectionRequest>? sections;
 
   SongCreateRequest({
     required this.title,
@@ -168,18 +235,21 @@ class SongCreateRequest {
     this.youtubeUrl,
     this.musicUrl,
     this.tags,
+    this.sections,
   });
 
   Map<String, dynamic> toJson() => {
-    'title': title,
-    if (artist != null) 'artist': artist,
-    if (originalKey != null) 'originalKey': originalKey,
-    if (bpm != null) 'bpm': bpm,
-    if (memo != null) 'memo': memo,
-    if (youtubeUrl != null) 'youtubeUrl': youtubeUrl,
-    if (musicUrl != null) 'musicUrl': musicUrl,
-    if (tags != null) 'tags': tags,
-  };
+        'title': title,
+        if (artist != null) 'artist': artist,
+        if (originalKey != null) 'originalKey': originalKey,
+        if (bpm != null) 'bpm': bpm,
+        if (memo != null) 'memo': memo,
+        if (youtubeUrl != null) 'youtubeUrl': youtubeUrl,
+        if (musicUrl != null) 'musicUrl': musicUrl,
+        if (tags != null) 'tags': tags,
+        if (sections != null)
+          'sections': sections!.map((e) => e.toJson()).toList(),
+      };
 }
 
 class SongUpdateRequest {
@@ -191,6 +261,7 @@ class SongUpdateRequest {
   final String? youtubeUrl;
   final String? musicUrl;
   final List<String>? tags;
+  final List<SongSectionRequest>? sections;
 
   SongUpdateRequest({
     this.title,
@@ -201,16 +272,19 @@ class SongUpdateRequest {
     this.youtubeUrl,
     this.musicUrl,
     this.tags,
+    this.sections,
   });
 
   Map<String, dynamic> toJson() => {
-    if (title != null) 'title': title,
-    if (artist != null) 'artist': artist,
-    if (originalKey != null) 'originalKey': originalKey,
-    if (bpm != null) 'bpm': bpm,
-    if (memo != null) 'memo': memo,
-    if (youtubeUrl != null) 'youtubeUrl': youtubeUrl,
-    if (musicUrl != null) 'musicUrl': musicUrl,
-    if (tags != null) 'tags': tags,
-  };
+        if (title != null) 'title': title,
+        if (artist != null) 'artist': artist,
+        if (originalKey != null) 'originalKey': originalKey,
+        if (bpm != null) 'bpm': bpm,
+        if (memo != null) 'memo': memo,
+        if (youtubeUrl != null) 'youtubeUrl': youtubeUrl,
+        if (musicUrl != null) 'musicUrl': musicUrl,
+        if (tags != null) 'tags': tags,
+        if (sections != null)
+          'sections': sections!.map((e) => e.toJson()).toList(),
+      };
 }

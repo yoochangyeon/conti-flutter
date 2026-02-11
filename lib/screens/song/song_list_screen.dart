@@ -3,6 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/song.dart';
+import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
+import '../../widgets/conti_card.dart';
+import '../../widgets/conti_empty_state.dart';
+import '../../widgets/conti_skeleton.dart';
 
 class SongListScreen extends ConsumerStatefulWidget {
   final int teamId;
@@ -25,7 +30,9 @@ class _SongListScreenState extends ConsumerState<SongListScreen> {
 
   void _search() {
     setState(() {
-      _keyword = _searchController.text.trim().isEmpty ? null : _searchController.text.trim();
+      _keyword = _searchController.text.trim().isEmpty
+          ? null
+          : _searchController.text.trim();
     });
   }
 
@@ -33,22 +40,23 @@ class _SongListScreenState extends ConsumerState<SongListScreen> {
   Widget build(BuildContext context) {
     final params = SongListParams(teamId: widget.teamId, keyword: _keyword);
     final songsAsync = ref.watch(songsProvider(params));
-    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('찬양 DB')),
       body: Column(
         children: [
+          // Search bar
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, AppSpacing.sm),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: '제목 또는 아티스트 검색',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search_rounded),
                 suffixIcon: _keyword != null
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: const Icon(Icons.clear_rounded),
                         onPressed: () {
                           _searchController.clear();
                           setState(() => _keyword = null);
@@ -61,34 +69,36 @@ class _SongListScreenState extends ConsumerState<SongListScreen> {
           ),
           Expanded(
             child: songsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const ContiListSkeleton(
+                  itemCount: 6, itemHeight: 72),
               error: (e, _) => Center(child: Text('오류: $e')),
               data: (paged) {
                 if (paged.content.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.music_off, size: 64, color: theme.colorScheme.outline),
-                        const SizedBox(height: 16),
-                        Text(
-                          _keyword != null ? '검색 결과가 없습니다' : '등록된 찬양이 없습니다',
-                          style: theme.textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
+                  return ContiEmptyState(
+                    icon: Icons.music_off_rounded,
+                    title: _keyword != null ? '검색 결과가 없습니다' : '등록된 찬양이 없습니다',
+                    subtitle:
+                        _keyword != null ? '다른 키워드로 검색해보세요' : '새로운 찬양을 추가해보세요',
+                    actionLabel: _keyword == null ? '찬양 추가' : null,
+                    onAction: _keyword == null
+                        ? () => context
+                            .push('/teams/${widget.teamId}/songs/create')
+                        : null,
                   );
                 }
                 return RefreshIndicator(
-                  onRefresh: () async => ref.invalidate(songsProvider(params)),
+                  onRefresh: () async =>
+                      ref.invalidate(songsProvider(params)),
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg),
                     itemCount: paged.content.length,
                     itemBuilder: (context, index) {
                       final song = paged.content[index];
                       return _SongTile(
                         song: song,
-                        onTap: () => context.push('/teams/${widget.teamId}/songs/${song.id}'),
+                        onTap: () => context.push(
+                            '/teams/${widget.teamId}/songs/${song.id}'),
                       );
                     },
                   ),
@@ -99,8 +109,9 @@ class _SongListScreenState extends ConsumerState<SongListScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/teams/${widget.teamId}/songs/create'),
-        child: const Icon(Icons.add),
+        onPressed: () =>
+            context.push('/teams/${widget.teamId}/songs/create'),
+        child: const Icon(Icons.add_rounded),
       ),
     );
   }
@@ -115,32 +126,97 @@ class _SongTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
+    // Generate a gradient color based on the song title
+    final colorIndex = song.title.hashCode.abs() % 5;
+    final avatarColors = [
+      [AppTheme.primaryColor, AppTheme.secondaryColor],
+      [AppTheme.tertiaryColor, const Color(0xFFFF9A76)],
+      [AppTheme.secondaryColor, const Color(0xFF56CCF2)],
+      [const Color(0xFFFF9A76), const Color(0xFFFFC857)],
+      [const Color(0xFF56CCF2), AppTheme.primaryColor],
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: ContiCard(
         onTap: onTap,
-        title: Text(song.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Text(
-          [
-            if (song.artist != null) song.artist!,
-            if (song.originalKey != null) 'Key: ${song.originalKey}',
-          ].join(' | '),
-          style: theme.textTheme.bodySmall,
+        padding: const EdgeInsets.all(AppSpacing.md),
+        borderRadius: 16,
+        child: Row(
+          children: [
+            // Title initial avatar
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: avatarColors[colorIndex],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: AppRadius.borderMd,
+              ),
+              child: Center(
+                child: Text(
+                  song.title.isNotEmpty ? song.title[0] : '?',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+            AppSpacing.hGapMd,
+            // Song info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    song.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall,
+                  ),
+                  if (song.artist != null || song.originalKey != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      [
+                        if (song.artist != null) song.artist!,
+                        if (song.originalKey != null)
+                          'Key: ${song.originalKey}',
+                      ].join(' · '),
+                      style: theme.textTheme.bodySmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            // Tags
+            if (song.tags.isNotEmpty) ...[
+              AppSpacing.hGapSm,
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color:
+                      theme.colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  song.tags.first,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
-        trailing: song.tags.isNotEmpty
-            ? Wrap(
-                spacing: 4,
-                children: song.tags
-                    .take(2)
-                    .map((tag) => Chip(
-                          label: Text(tag, style: const TextStyle(fontSize: 10)),
-                          padding: EdgeInsets.zero,
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          visualDensity: VisualDensity.compact,
-                        ))
-                    .toList(),
-              )
-            : null,
       ),
     );
   }

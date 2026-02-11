@@ -124,6 +124,7 @@ class _SongFormScreenState extends ConsumerState<SongFormScreen> {
 
     if (mounted) {
       setState(() => _isLoading = false);
+      ref.invalidate(songsProvider);
       context.pop();
     }
   }

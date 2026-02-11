@@ -34,4 +34,23 @@ class AppConstants {
   // Team roles
   static const String roleAdmin = 'ADMIN';
   static const String roleViewer = 'VIEWER';
+
+  // Section types
+  static const List<String> sectionTypes = [
+    'INTRO', 'VERSE', 'PRE_CHORUS', 'CHORUS', 'BRIDGE',
+    'INTERLUDE', 'OUTRO', 'TAG', 'ENDING', 'CUSTOM',
+  ];
+
+  static const Map<String, String> sectionTypeNames = {
+    'INTRO': '인트로',
+    'VERSE': '벌스',
+    'PRE_CHORUS': '프리코러스',
+    'CHORUS': '코러스',
+    'BRIDGE': '브릿지',
+    'INTERLUDE': '인터루드',
+    'OUTRO': '아웃트로',
+    'TAG': '태그',
+    'ENDING': '엔딩',
+    'CUSTOM': '커스텀',
+  };
 }

@@ -51,7 +51,7 @@ class ApiClient {
 
       final response = await dio.post(
         '/auth/refresh',
-        options: Options(headers: {'Authorization': 'Bearer $refreshToken'}),
+        data: {'refreshToken': refreshToken},
       );
 
       if (response.statusCode == 200) {
@@ -113,6 +113,20 @@ class ApiClient {
     }
   }
 
+  // PUT request
+  Future<ApiResponse<T>> put<T>(
+    String path, {
+    dynamic data,
+    T Function(dynamic)? fromJson,
+  }) async {
+    try {
+      final response = await _dio.put(path, data: data);
+      return ApiResponse.fromJson(response.data, fromJson);
+    } on DioException catch (e) {
+      return _handleError(e);
+    }
+  }
+
   // DELETE request
   Future<ApiResponse<T>> delete<T>(
     String path, {
@@ -162,7 +176,7 @@ class ApiClient {
   // Dev login (for testing without OAuth)
   Future<ApiResponse<Map<String, dynamic>>> devLogin() async {
     try {
-      final dio = Dio(BaseOptions(baseUrl: AppConstants.baseUrl));
+      final dio = Dio(BaseOptions(baseUrl: '${AppConstants.baseUrl}${AppConstants.apiPrefix}'));
       final response = await dio.post('/dev/test-login');
       return ApiResponse.fromJson(
         response.data,
