@@ -1,3 +1,5 @@
+export 'song_stats.dart';
+
 class SongResponse {
   final int id;
   final String title;
@@ -43,7 +45,9 @@ class SongDetailResponse {
   final String? musicUrl;
   final List<SongFileResponse> files;
   final int usageCount;
+  final String? lastUsedAt;
   final List<SongSectionResponse> sections;
+  final List<ArrangementResponse> arrangements;
 
   SongDetailResponse({
     required this.id,
@@ -58,7 +62,9 @@ class SongDetailResponse {
     this.musicUrl,
     required this.files,
     required this.usageCount,
+    this.lastUsedAt,
     required this.sections,
+    required this.arrangements,
   });
 
   factory SongDetailResponse.fromJson(Map<String, dynamic> json) {
@@ -78,9 +84,15 @@ class SongDetailResponse {
               .toList() ??
           [],
       usageCount: json['usageCount'] as int? ?? 0,
+      lastUsedAt: json['lastUsedAt'] as String?,
       sections: (json['sections'] as List?)
               ?.map((e) =>
                   SongSectionResponse.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      arrangements: (json['arrangements'] as List?)
+              ?.map((e) =>
+                  ArrangementResponse.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
     );
@@ -287,4 +299,51 @@ class SongUpdateRequest {
         if (sections != null)
           'sections': sections!.map((e) => e.toJson()).toList(),
       };
+}
+
+// --- Arrangement Models ---
+
+class ArrangementResponse {
+  final int id;
+  final String name;
+  final String? songKey;
+  final int? bpm;
+  final String? meter;
+  final int? durationMinutes;
+  final String? description;
+  final bool isDefault;
+  final DateTime createdAt;
+  final List<SongSectionResponse> sections;
+
+  ArrangementResponse({
+    required this.id,
+    required this.name,
+    this.songKey,
+    this.bpm,
+    this.meter,
+    this.durationMinutes,
+    this.description,
+    required this.isDefault,
+    required this.createdAt,
+    required this.sections,
+  });
+
+  factory ArrangementResponse.fromJson(Map<String, dynamic> json) {
+    return ArrangementResponse(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      songKey: json['songKey'] as String?,
+      bpm: json['bpm'] as int?,
+      meter: json['meter'] as String?,
+      durationMinutes: json['durationMinutes'] as int?,
+      description: json['description'] as String?,
+      isDefault: json['isDefault'] as bool? ?? false,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      sections: (json['sections'] as List?)
+              ?.map((e) =>
+                  SongSectionResponse.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+    );
+  }
 }

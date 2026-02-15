@@ -6,6 +6,7 @@ import 'package:conti_app/providers/providers.dart';
 import '../../core/constants/app_spacing.dart';
 import '../../core/constants/app_theme.dart';
 import '../../widgets/conti_card.dart';
+import '../../widgets/conti_error_state.dart';
 import '../../widgets/conti_skeleton.dart';
 
 class TeamDetailScreen extends ConsumerWidget {
@@ -37,7 +38,9 @@ class TeamDetailScreen extends ConsumerWidget {
           padding: EdgeInsets.only(top: AppSpacing.lg),
           child: ContiListSkeleton(itemCount: 4, itemHeight: 80),
         ),
-        error: (e, _) => Center(child: Text('오류: $e')),
+        error: (e, _) => ContiErrorState(
+          onRetry: () => ref.invalidate(teamDetailProvider(teamId)),
+        ),
         data: (team) {
           if (team == null) {
             return const Center(child: Text('팀을 찾을 수 없습니다'));
@@ -134,6 +137,16 @@ class TeamDetailScreen extends ConsumerWidget {
               ),
               AppSpacing.gapMd,
               _NavigationCard(
+                icon: Icons.campaign_rounded,
+                title: '공지사항',
+                subtitle: '팀 공지 및 안내',
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFFA726), Color(0xFFFF7043)],
+                ),
+                onTap: () => context.push('/teams/$teamId/notices'),
+              ),
+              AppSpacing.gapMd,
+              _NavigationCard(
                 icon: Icons.people_rounded,
                 title: '팀원 관리',
                 subtitle: '멤버 초대 및 역할 관리',
@@ -141,6 +154,27 @@ class TeamDetailScreen extends ConsumerWidget {
                   colors: [Color(0xFF5B8DEF), Color(0xFF56CCF2)],
                 ),
                 onTap: () => context.push('/teams/$teamId/members'),
+              ),
+              AppSpacing.gapMd,
+              _NavigationCard(
+                icon: Icons.event_note_rounded,
+                title: '내 스케줄',
+                subtitle: '나의 예배 스케줄 확인',
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF56CCF2), Color(0xFF2F80ED)],
+                ),
+                onTap: () => context.push('/teams/$teamId/my-schedule'),
+              ),
+              AppSpacing.gapMd,
+              _NavigationCard(
+                icon: Icons.grid_view_rounded,
+                title: '스케줄 매트릭스',
+                subtitle: '날짜 x 포지션 전체 보기',
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF26C6DA), Color(0xFF00897B)],
+                ),
+                onTap: () =>
+                    context.push('/teams/$teamId/schedule-matrix'),
               ),
             ],
           );

@@ -7,6 +7,7 @@ import '../../core/constants/app_spacing.dart';
 import '../../core/constants/app_theme.dart';
 import '../../widgets/conti_card.dart';
 import '../../widgets/conti_empty_state.dart';
+import '../../widgets/conti_error_state.dart';
 import '../../widgets/conti_skeleton.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -31,6 +32,7 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
         actions: [
+          _NotificationBell(),
           IconButton(
             icon: const Icon(Icons.person_outline_rounded),
             onPressed: () => context.push('/profile'),
@@ -42,7 +44,9 @@ class HomeScreen extends ConsumerWidget {
           padding: EdgeInsets.only(top: AppSpacing.lg),
           child: ContiListSkeleton(itemCount: 3, itemHeight: 88),
         ),
-        error: (e, _) => Center(child: Text('오류: $e')),
+        error: (e, _) => ContiErrorState(
+          onRetry: () => ref.invalidate(userTeamsProvider),
+        ),
         data: (teams) {
           if (teams.isEmpty) {
             return ContiEmptyState(
@@ -103,6 +107,25 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _NotificationBell extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unreadCount = ref.watch(unreadNotificationCountProvider);
+
+    return IconButton(
+      icon: Badge(
+        isLabelVisible: unreadCount.valueOrNull != null && unreadCount.valueOrNull! > 0,
+        label: Text(
+          '${unreadCount.valueOrNull ?? 0}',
+          style: const TextStyle(fontSize: 10),
+        ),
+        child: const Icon(Icons.notifications_outlined),
+      ),
+      onPressed: () => context.push('/notifications'),
     );
   }
 }

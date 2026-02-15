@@ -19,16 +19,13 @@ class AppConstants {
     'Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm',
   ];
 
-  // Worship types
-  static const List<String> worshipTypes = [
-    '주일 1부 예배',
-    '주일 2부 예배',
-    '주일 3부 예배',
-    '수요 예배',
-    '금요 기도회',
-    '새벽 예배',
-    '청년 예배',
-    '기타',
+  // Worship types — use WorshipType enum from models/schedule.dart as source of truth
+  // Kept for backward compatibility; prefer WorshipType.values in new code.
+  static List<String> get worshipTypes =>
+      _worshipTypeCache;
+  static final List<String> _worshipTypeCache = [
+    'SUNDAY_1ST', 'SUNDAY_2ND', 'SUNDAY_3RD', 'WEDNESDAY',
+    'FRIDAY', 'DAWN', 'YOUTH', 'RETREAT', 'SPECIAL', 'OTHER',
   ];
 
   // Team roles

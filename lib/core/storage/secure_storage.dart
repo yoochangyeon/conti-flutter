@@ -1,13 +1,10 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:conti_app/core/constants/app_constants.dart';
+import 'web_storage_stub.dart' if (dart.library.html) 'web_storage_impl.dart';
 
 class SecureStorage {
   final FlutterSecureStorage? _storage;
-
-  /// 웹에서는 flutter_secure_storage의 Web Crypto API 초기화 문제로
-  /// 비동기 작업이 행(hang)될 수 있어 in-memory 저장소를 사용한다.
-  static final Map<String, String> _webStore = {};
 
   SecureStorage({FlutterSecureStorage? storage})
       : _storage = kIsWeb ? null : (storage ?? const FlutterSecureStorage());
@@ -52,7 +49,7 @@ class SecureStorage {
 
   Future<void> _write(String key, String value) async {
     if (kIsWeb) {
-      _webStore[key] = value;
+      writeWebStorage(key, value);
     } else {
       await _storage!.write(key: key, value: value);
     }
@@ -60,14 +57,14 @@ class SecureStorage {
 
   Future<String?> _read(String key) async {
     if (kIsWeb) {
-      return _webStore[key];
+      return readWebStorage(key);
     }
     return _storage!.read(key: key);
   }
 
   Future<void> _delete(String key) async {
     if (kIsWeb) {
-      _webStore.remove(key);
+      deleteWebStorage(key);
     } else {
       await _storage!.delete(key: key);
     }

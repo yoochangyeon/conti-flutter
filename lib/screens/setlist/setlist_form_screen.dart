@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:conti_app/core/constants/app_constants.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/setlist.dart';
+import 'package:conti_app/models/schedule.dart';
 
 class SetlistFormScreen extends ConsumerStatefulWidget {
   final int teamId;
@@ -24,6 +24,8 @@ class _SetlistFormScreenState extends ConsumerState<SetlistFormScreen> {
   String? _worshipType;
   bool _isLoading = false;
   bool _isEdit = false;
+  int? _selectedTemplateId;
+  String? _selectedTemplateName;
 
   @override
   void initState() {
@@ -92,8 +94,11 @@ class _SetlistFormScreenState extends ConsumerState<SetlistFormScreen> {
         worshipType: _worshipType,
         memo: _memoController.text.trim().isEmpty ? null : _memoController.text.trim(),
       );
+      final queryParams = _selectedTemplateId != null
+          ? '?templateId=$_selectedTemplateId'
+          : '';
       await api.post(
-        '/teams/${widget.teamId}/setlists',
+        '/teams/${widget.teamId}/setlists$queryParams',
         data: request.toJson(),
       );
     }
@@ -138,8 +143,9 @@ class _SetlistFormScreenState extends ConsumerState<SetlistFormScreen> {
             DropdownButtonFormField<String>(
               initialValue: _worshipType,
               decoration: const InputDecoration(labelText: '예배 종류'),
-              items: AppConstants.worshipTypes
-                  .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+              items: WorshipType.values
+                  .map((t) => DropdownMenuItem(
+                      value: t.jsonValue, child: Text(t.displayName)))
                   .toList(),
               onChanged: (v) => setState(() => _worshipType = v),
             ),
@@ -149,6 +155,18 @@ class _SetlistFormScreenState extends ConsumerState<SetlistFormScreen> {
               decoration: const InputDecoration(labelText: '메모'),
               maxLines: 4,
             ),
+            if (!_isEdit) ...[
+              const SizedBox(height: 16),
+              _TemplateSelector(
+                teamId: widget.teamId,
+                selectedTemplateId: _selectedTemplateId,
+                selectedTemplateName: _selectedTemplateName,
+                onSelected: (id, name) => setState(() {
+                  _selectedTemplateId = id;
+                  _selectedTemplateName = name;
+                }),
+              ),
+            ],
             const SizedBox(height: 32),
             FilledButton(
               onPressed: _isLoading ? null : _submit,
@@ -159,6 +177,57 @@ class _SetlistFormScreenState extends ConsumerState<SetlistFormScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TemplateSelector extends ConsumerWidget {
+  final int teamId;
+  final int? selectedTemplateId;
+  final String? selectedTemplateName;
+  final void Function(int? id, String? name) onSelected;
+
+  const _TemplateSelector({
+    required this.teamId,
+    required this.selectedTemplateId,
+    required this.selectedTemplateName,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final templatesAsync = ref.watch(setlistTemplatesProvider(teamId));
+    final theme = Theme.of(context);
+
+    return templatesAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
+      data: (templates) {
+        if (templates.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('템플릿으로 시작', style: theme.textTheme.titleSmall),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ChoiceChip(
+                  label: const Text('빈 콘티'),
+                  selected: selectedTemplateId == null,
+                  onSelected: (_) => onSelected(null, null),
+                ),
+                ...templates.map((t) => ChoiceChip(
+                      label: Text(t.name),
+                      selected: selectedTemplateId == t.id,
+                      onSelected: (_) => onSelected(t.id, t.name),
+                    )),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

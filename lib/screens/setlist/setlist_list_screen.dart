@@ -7,6 +7,7 @@ import '../../core/constants/app_spacing.dart';
 import '../../core/constants/app_theme.dart';
 import '../../widgets/conti_card.dart';
 import '../../widgets/conti_empty_state.dart';
+import '../../widgets/conti_error_state.dart';
 import '../../widgets/conti_skeleton.dart';
 
 class SetlistListScreen extends ConsumerStatefulWidget {
@@ -60,7 +61,9 @@ class _SetlistListScreenState extends ConsumerState<SetlistListScreen> {
           padding: EdgeInsets.only(top: AppSpacing.lg),
           child: ContiListSkeleton(itemCount: 5, itemHeight: 80),
         ),
-        error: (e, _) => Center(child: Text('오류: $e')),
+        error: (e, _) => ContiErrorState(
+          onRetry: () => ref.invalidate(setlistsProvider(params)),
+        ),
         data: (paged) {
           if (paged.content.isEmpty) {
             return ContiEmptyState(
@@ -137,7 +140,8 @@ class _SetlistListScreenState extends ConsumerState<SetlistListScreen> {
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  setlist.worshipType!,
+                                  setlist.worshipTypeDisplayName ??
+                                      setlist.worshipType!,
                                   style:
                                       theme.textTheme.labelSmall?.copyWith(
                                     color: theme.colorScheme.primary,

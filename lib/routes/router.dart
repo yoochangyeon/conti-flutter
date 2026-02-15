@@ -13,10 +13,22 @@ import 'package:conti_app/screens/song/song_list_screen.dart';
 import 'package:conti_app/screens/song/song_detail_screen.dart';
 import 'package:conti_app/screens/song/song_form_screen.dart';
 import 'package:conti_app/screens/song/song_section_editor.dart';
+import 'package:conti_app/screens/song/song_stats_screen.dart';
 import 'package:conti_app/screens/setlist/setlist_list_screen.dart';
 import 'package:conti_app/screens/setlist/setlist_detail_screen.dart';
 import 'package:conti_app/screens/setlist/setlist_form_screen.dart';
+import 'package:conti_app/screens/setlist/setlist_templates_screen.dart';
+import 'package:conti_app/screens/schedule/schedule_board_screen.dart';
+import 'package:conti_app/screens/schedule/schedule_assign_screen.dart';
+import 'package:conti_app/screens/schedule/schedule_matrix_screen.dart';
+import 'package:conti_app/screens/schedule/my_schedule_screen.dart';
+import 'package:conti_app/screens/schedule/blockout_form_screen.dart';
+import 'package:conti_app/screens/team/member_positions_screen.dart';
 import 'package:conti_app/screens/profile/profile_screen.dart';
+import 'package:conti_app/screens/team/team_notices_screen.dart';
+import 'package:conti_app/screens/setlist/setlist_notes_screen.dart';
+import 'package:conti_app/screens/notification/notification_list_screen.dart';
+import 'package:conti_app/screens/notification/notification_settings_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -52,6 +64,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/profile',
         builder: (context, state) => const ProfileScreen(),
       ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationListScreen(),
+      ),
+      GoRoute(
+        path: '/notifications/settings',
+        builder: (context, state) => const NotificationSettingsScreen(),
+      ),
       // Team routes
       GoRoute(
         path: '/teams/create',
@@ -75,12 +95,56 @@ final routerProvider = Provider<GoRouter>((ref) {
               return TeamMembersScreen(teamId: teamId);
             },
           ),
+          GoRoute(
+            path: 'members/:memberId/positions',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final memberId = int.parse(state.pathParameters['memberId']!);
+              return MemberPositionsScreen(teamId: teamId, memberId: memberId);
+            },
+          ),
+          GoRoute(
+            path: 'members/:memberId/blockouts',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final memberId = int.parse(state.pathParameters['memberId']!);
+              return BlockoutFormScreen(teamId: teamId, memberId: memberId);
+            },
+          ),
+          GoRoute(
+            path: 'notices',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              return TeamNoticesScreen(teamId: teamId);
+            },
+          ),
+          GoRoute(
+            path: 'my-schedule',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              return MyScheduleScreen(teamId: teamId);
+            },
+          ),
+          GoRoute(
+            path: 'schedule-matrix',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              return ScheduleMatrixScreen(teamId: teamId);
+            },
+          ),
           // Song routes
           GoRoute(
             path: 'songs',
             builder: (context, state) {
               final teamId = int.parse(state.pathParameters['teamId']!);
               return SongListScreen(teamId: teamId);
+            },
+          ),
+          GoRoute(
+            path: 'songs/stats',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              return SongStatsScreen(teamId: teamId);
             },
           ),
           GoRoute(
@@ -130,6 +194,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             },
           ),
           GoRoute(
+            path: 'setlist-templates',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              return SetlistTemplatesScreen(teamId: teamId);
+            },
+          ),
+          GoRoute(
             path: 'setlists/:setlistId',
             builder: (context, state) {
               final teamId = int.parse(state.pathParameters['teamId']!);
@@ -143,6 +214,30 @@ final routerProvider = Provider<GoRouter>((ref) {
               final teamId = int.parse(state.pathParameters['teamId']!);
               final setlistId = int.parse(state.pathParameters['setlistId']!);
               return SetlistFormScreen(teamId: teamId, setlistId: setlistId);
+            },
+          ),
+          GoRoute(
+            path: 'setlists/:setlistId/notes',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final setlistId = int.parse(state.pathParameters['setlistId']!);
+              return SetlistNotesScreen(teamId: teamId, setlistId: setlistId);
+            },
+          ),
+          GoRoute(
+            path: 'setlists/:setlistId/schedule',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final setlistId = int.parse(state.pathParameters['setlistId']!);
+              return ScheduleBoardScreen(teamId: teamId, setlistId: setlistId);
+            },
+          ),
+          GoRoute(
+            path: 'setlists/:setlistId/schedule/assign',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final setlistId = int.parse(state.pathParameters['setlistId']!);
+              return ScheduleAssignScreen(teamId: teamId, setlistId: setlistId);
             },
           ),
         ],

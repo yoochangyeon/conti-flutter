@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:conti_app/providers/providers.dart';
+import 'package:conti_app/models/song.dart';
 import '../../core/constants/app_spacing.dart';
 import '../../core/constants/app_theme.dart';
 import '../../widgets/conti_card.dart';
+import '../../widgets/conti_error_state.dart';
 import '../../widgets/conti_skeleton.dart';
 import 'song_structure_tab.dart';
 
@@ -27,7 +29,7 @@ class _SongDetailScreenState extends ConsumerState<SongDetailScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -63,6 +65,7 @@ class _SongDetailScreenState extends ConsumerState<SongDetailScreen>
           tabs: const [
             Tab(text: '정보'),
             Tab(text: '곡 구조'),
+            Tab(text: '편곡'),
           ],
         ),
       ),
@@ -71,7 +74,10 @@ class _SongDetailScreenState extends ConsumerState<SongDetailScreen>
           padding: EdgeInsets.only(top: AppSpacing.lg),
           child: ContiListSkeleton(itemCount: 4, itemHeight: 72),
         ),
-        error: (e, _) => Center(child: Text('오류: $e')),
+        error: (e, _) => ContiErrorState(
+          onRetry: () => ref.invalidate(songDetailProvider(
+              (teamId: widget.teamId, songId: widget.songId))),
+        ),
         data: (song) {
           if (song == null) {
             return const Center(child: Text('곡을 찾을 수 없습니다'));
@@ -82,10 +88,12 @@ class _SongDetailScreenState extends ConsumerState<SongDetailScreen>
               _InfoTab(song: song, teamId: widget.teamId),
               SongStructureTab(
                 sections: song.sections,
+                originalKey: song.originalKey,
                 onEdit: () => context.push(
                   '/teams/${widget.teamId}/songs/${widget.songId}/structure/edit',
                 ),
               ),
+              _ArrangementsTab(song: song, teamId: widget.teamId),
             ],
           );
         },
@@ -96,15 +104,17 @@ class _SongDetailScreenState extends ConsumerState<SongDetailScreen>
           return AnimatedBuilder(
             animation: _tabController,
             builder: (context, _) {
-              if (_tabController.index != 1) return const SizedBox.shrink();
-              return FloatingActionButton(
-                onPressed: () => context.push(
-                  '/teams/${widget.teamId}/songs/${widget.songId}/structure/edit',
-                ),
-                child: Icon(
-                  song.sections.isEmpty ? Icons.add : Icons.edit,
-                ),
-              );
+              if (_tabController.index == 1) {
+                return FloatingActionButton(
+                  onPressed: () => context.push(
+                    '/teams/${widget.teamId}/songs/${widget.songId}/structure/edit',
+                  ),
+                  child: Icon(
+                    song.sections.isEmpty ? Icons.add : Icons.edit,
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
             },
           );
         },
@@ -133,14 +143,22 @@ class _SongDetailScreenState extends ConsumerState<SongDetailScreen>
     );
     if (confirmed == true && context.mounted) {
       final api = ref.read(apiClientProvider);
-      await api.delete('/teams/${widget.teamId}/songs/${widget.songId}');
-      if (context.mounted) context.pop();
+      final response = await api.delete('/teams/${widget.teamId}/songs/${widget.songId}');
+      if (context.mounted) {
+        if (response.success) {
+          context.pop();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(response.error?.message ?? '삭제에 실패했습니다')),
+          );
+        }
+      }
     }
   }
 }
 
 class _InfoTab extends StatelessWidget {
-  final dynamic song;
+  final SongDetailResponse song;
   final int teamId;
 
   const _InfoTab({required this.song, required this.teamId});
@@ -219,6 +237,12 @@ class _InfoTab extends StatelessWidget {
                 label: '사용',
                 value: '${song.usageCount}회',
               ),
+              if (song.lastUsedAt != null)
+                _InfoItem(
+                  icon: Icons.calendar_today_rounded,
+                  label: '마지막 사용',
+                  value: song.lastUsedAt!,
+                ),
             ],
           ),
         ),
@@ -380,6 +404,133 @@ class _LinkCard extends StatelessWidget {
               ),
         ],
       ),
+    );
+  }
+}
+
+class _ArrangementsTab extends StatelessWidget {
+  final SongDetailResponse song;
+  final int teamId;
+
+  const _ArrangementsTab({required this.song, required this.teamId});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final arrangements = song.arrangements;
+
+    if (arrangements.isEmpty) {
+      return const Center(child: Text('편곡 정보가 없습니다.'));
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      itemCount: arrangements.length,
+      itemBuilder: (context, index) {
+        final arr = arrangements[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.md),
+          child: ContiCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        arr.name,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    if (arr.isDefault)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary
+                              .withValues(alpha: 0.1),
+                          borderRadius: AppRadius.borderSm,
+                        ),
+                        child: Text(
+                          '기본',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                AppSpacing.gapSm,
+                Wrap(
+                  spacing: AppSpacing.lg,
+                  children: [
+                    if (arr.songKey != null)
+                      _ArrangementChip(label: 'Key', value: arr.songKey!),
+                    if (arr.bpm != null)
+                      _ArrangementChip(label: 'BPM', value: '${arr.bpm}'),
+                    if (arr.meter != null)
+                      _ArrangementChip(label: '박자', value: arr.meter!),
+                    if (arr.durationMinutes != null)
+                      _ArrangementChip(
+                          label: '시간', value: '${arr.durationMinutes}분'),
+                  ],
+                ),
+                if (arr.description != null &&
+                    arr.description!.isNotEmpty) ...[
+                  AppSpacing.gapSm,
+                  Text(
+                    arr.description!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+                if (arr.sections.isNotEmpty) ...[
+                  AppSpacing.gapMd,
+                  Text(
+                    '섹션 ${arr.sections.length}개',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ArrangementChip extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _ArrangementChip({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          '$label: ',
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        Text(
+          value,
+          style: theme.textTheme.labelMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }

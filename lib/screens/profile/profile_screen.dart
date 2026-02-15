@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:conti_app/core/constants/app_constants.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/user.dart';
 
@@ -43,6 +45,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('프로필이 수정되었습니다')),
         );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('프로필 수정에 실패했습니다')),
+        );
       }
     }
   }
@@ -69,6 +75,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final authState = ref.watch(authProvider);
     final user = authState.user;
     final theme = Theme.of(context);
+    final themeMode = ref.watch(themeModeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -147,7 +154,106 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                   ),
                 ],
-                const SizedBox(height: 48),
+                const SizedBox(height: 32),
+                // Dark mode setting
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8, bottom: 4),
+                          child: Text('화면 설정', style: theme.textTheme.titleSmall),
+                        ),
+                        _ThemeModeOption(
+                          title: '시스템 설정',
+                          icon: Icons.settings_brightness_rounded,
+                          isSelected: themeMode == ThemeMode.system,
+                          onTap: () => ref
+                              .read(themeModeProvider.notifier)
+                              .setThemeMode(ThemeMode.system),
+                        ),
+                        _ThemeModeOption(
+                          title: '라이트 모드',
+                          icon: Icons.light_mode_rounded,
+                          isSelected: themeMode == ThemeMode.light,
+                          onTap: () => ref
+                              .read(themeModeProvider.notifier)
+                              .setThemeMode(ThemeMode.light),
+                        ),
+                        _ThemeModeOption(
+                          title: '다크 모드',
+                          icon: Icons.dark_mode_rounded,
+                          isSelected: themeMode == ThemeMode.dark,
+                          onTap: () => ref
+                              .read(themeModeProvider.notifier)
+                              .setThemeMode(ThemeMode.dark),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Calendar subscribe
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Calendar Subscribe',
+                            style: theme.textTheme.titleSmall),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Copy the iCal URL to subscribe to your schedule in Google Calendar, Apple Calendar, etc.',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Consumer(builder: (context, ref, _) {
+                          final tokenAsync =
+                              ref.watch(calendarTokenProvider);
+                          return tokenAsync.when(
+                            loading: () => const SizedBox(
+                              height: 40,
+                              child: Center(
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2)),
+                            ),
+                            error: (e, _) => Text('Error: $e',
+                                style: theme.textTheme.bodySmall),
+                            data: (token) {
+                              if (token == null) {
+                                return const Text('Failed to get token');
+                              }
+                              final url =
+                                  '${AppConstants.baseUrl}${AppConstants.apiPrefix}/calendar.ics?token=$token';
+                              return FilledButton.icon(
+                                onPressed: () {
+                                  Clipboard.setData(
+                                      ClipboardData(text: url));
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Calendar URL copied to clipboard')),
+                                  );
+                                },
+                                icon: const Icon(
+                                    Icons.copy_rounded,
+                                    size: 18),
+                                label: const Text('Copy iCal URL'),
+                              );
+                            },
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
                 OutlinedButton.icon(
                   onPressed: _logout,
                   icon: const Icon(Icons.logout),
@@ -158,6 +264,48 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
               ],
             ),
+    );
+  }
+}
+
+class _ThemeModeOption extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _ThemeModeOption({
+    required this.title,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(
+        icon,
+        color: isSelected
+            ? theme.colorScheme.primary
+            : theme.colorScheme.onSurfaceVariant,
+      ),
+      title: Text(
+        title,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+          color: isSelected
+              ? theme.colorScheme.primary
+              : theme.colorScheme.onSurface,
+        ),
+      ),
+      trailing: isSelected
+          ? Icon(Icons.check_rounded, color: theme.colorScheme.primary)
+          : null,
+      onTap: onTap,
     );
   }
 }

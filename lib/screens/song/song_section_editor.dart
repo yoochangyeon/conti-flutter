@@ -88,13 +88,23 @@ class _SongSectionEditorScreenState
         );
       }).toList();
 
-      await apiClient.put(
+      final response = await apiClient.put(
         '/teams/${widget.teamId}/songs/${widget.songId}/sections',
         data: requests.map((r) => r.toJson()).toList(),
       );
 
-      ref.invalidate(
-          songDetailProvider((teamId: widget.teamId, songId: widget.songId)));
+      if (!response.success) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('저장 실패: ${response.error?.message ?? '알 수 없는 오류'}')),
+          );
+        }
+        return;
+      }
+
+      final providerKey = (teamId: widget.teamId, songId: widget.songId);
+      ref.invalidate(songDetailProvider(providerKey));
+      await ref.read(songDetailProvider(providerKey).future);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
