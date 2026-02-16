@@ -347,3 +347,59 @@ class ArrangementResponse {
     );
   }
 }
+
+// --- Arrangement Request Models ---
+
+class ArrangementCreateRequest {
+  final String name;
+  final String? songKey;
+  final int? bpm;
+  final String? meter;
+  final int? durationMinutes;
+  final String? description;
+
+  ArrangementCreateRequest({
+    required this.name,
+    this.songKey,
+    this.bpm,
+    this.meter,
+    this.durationMinutes,
+    this.description,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        if (songKey != null) 'songKey': songKey,
+        if (bpm != null) 'bpm': bpm,
+        if (meter != null) 'meter': meter,
+        if (durationMinutes != null) 'durationMinutes': durationMinutes,
+        if (description != null) 'description': description,
+      };
+}
+
+class ArrangementUpdateRequest {
+  final String? name;
+  final String? songKey;
+  final int? bpm;
+  final String? meter;
+  final int? durationMinutes;
+  final String? description;
+
+  ArrangementUpdateRequest({
+    this.name,
+    this.songKey,
+    this.bpm,
+    this.meter,
+    this.durationMinutes,
+    this.description,
+  });
+
+  Map<String, dynamic> toJson() => {
+        if (name != null) 'name': name,
+        if (songKey != null) 'songKey': songKey,
+        if (bpm != null) 'bpm': bpm,
+        if (meter != null) 'meter': meter,
+        if (durationMinutes != null) 'durationMinutes': durationMinutes,
+        if (description != null) 'description': description,
+      };
+}

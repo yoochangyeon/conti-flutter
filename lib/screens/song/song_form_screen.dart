@@ -197,6 +197,16 @@ class _SongFormScreenState extends ConsumerState<SongFormScreen> {
                     .toList(),
               ),
             ],
+            // Tag suggestions from existing tags
+            _TagSuggestions(
+              teamId: widget.teamId,
+              selectedTags: _tags,
+              onTagSelected: (tag) {
+                if (!_tags.contains(tag)) {
+                  setState(() => _tags.add(tag));
+                }
+              },
+            ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _youtubeController,
@@ -223,6 +233,45 @@ class _SongFormScreenState extends ConsumerState<SongFormScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TagSuggestions extends ConsumerWidget {
+  final int teamId;
+  final List<String> selectedTags;
+  final ValueChanged<String> onTagSelected;
+
+  const _TagSuggestions({
+    required this.teamId,
+    required this.selectedTags,
+    required this.onTagSelected,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tagsAsync = ref.watch(tagsProvider(teamId));
+    return tagsAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
+      data: (tags) {
+        final suggestions =
+            tags.where((t) => !selectedTags.contains(t.tag)).toList();
+        if (suggestions.isEmpty) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: suggestions.map((t) {
+              return ActionChip(
+                label: Text('${t.tag} (${t.count})'),
+                onPressed: () => onTagSelected(t.tag),
+              );
+            }).toList(),
+          ),
+        );
+      },
     );
   }
 }

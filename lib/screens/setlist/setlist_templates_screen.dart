@@ -49,6 +49,7 @@ class SetlistTemplatesScreen extends ConsumerWidget {
               final t = templates[index];
               return _TemplateTile(
                 template: t,
+                onEdit: () => _showEditDialog(context, ref, t),
                 onDelete: () => _deleteTemplate(context, ref, t.id),
               );
             },
@@ -114,6 +115,63 @@ class SetlistTemplatesScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _showEditDialog(
+      BuildContext context, WidgetRef ref, SetlistTemplateResponse template) async {
+    final nameController = TextEditingController(text: template.name);
+    final descController =
+        TextEditingController(text: template.description ?? '');
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('템플릿 수정'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                  labelText: '템플릿 이름 *', hintText: '예: 주일 예배 기본'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: descController,
+              decoration: const InputDecoration(
+                  labelText: '설명 (선택)', hintText: '예: 전주-찬양3곡-설교-봉헌'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('취소')),
+          FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('수정')),
+        ],
+      ),
+    );
+    if (confirmed == true && nameController.text.trim().isNotEmpty) {
+      final api = ref.read(apiClientProvider);
+      final response = await api.put(
+        '/teams/$teamId/setlist-templates/${template.id}',
+        data: {
+          'name': nameController.text.trim(),
+          if (descController.text.trim().isNotEmpty)
+            'description': descController.text.trim(),
+        },
+      );
+      if (response.success) {
+        ref.invalidate(setlistTemplatesProvider(teamId));
+      } else if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  response.error?.message ?? '템플릿 수정에 실패했습니다')),
+        );
+      }
+    }
+  }
+
   Future<void> _deleteTemplate(
       BuildContext context, WidgetRef ref, int templateId) async {
     final confirmed = await showDialog<bool>(
@@ -152,9 +210,14 @@ class SetlistTemplatesScreen extends ConsumerWidget {
 
 class _TemplateTile extends StatelessWidget {
   final SetlistTemplateResponse template;
+  final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const _TemplateTile({required this.template, required this.onDelete});
+  const _TemplateTile({
+    required this.template,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -200,11 +263,21 @@ class _TemplateTile extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.delete_outline_rounded,
-                  color: theme.colorScheme.error.withValues(alpha: 0.7)),
-              onPressed: onDelete,
+            PopupMenuButton<String>(
               iconSize: 20,
+              onSelected: (value) {
+                if (value == 'edit') onEdit();
+                if (value == 'delete') onDelete();
+              },
+              itemBuilder: (ctx) => [
+                const PopupMenuItem(
+                    value: 'edit', child: Text('수정')),
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Text('삭제',
+                      style: TextStyle(color: theme.colorScheme.error)),
+                ),
+              ],
             ),
           ],
         ),

@@ -14,6 +14,7 @@ import 'package:conti_app/screens/song/song_detail_screen.dart';
 import 'package:conti_app/screens/song/song_form_screen.dart';
 import 'package:conti_app/screens/song/song_section_editor.dart';
 import 'package:conti_app/screens/song/song_stats_screen.dart';
+import 'package:conti_app/screens/song/arrangement_form_screen.dart';
 import 'package:conti_app/screens/setlist/setlist_list_screen.dart';
 import 'package:conti_app/screens/setlist/setlist_detail_screen.dart';
 import 'package:conti_app/screens/setlist/setlist_form_screen.dart';
@@ -176,6 +177,27 @@ final routerProvider = Provider<GoRouter>((ref) {
               final teamId = int.parse(state.pathParameters['teamId']!);
               final songId = int.parse(state.pathParameters['songId']!);
               return SongSectionEditorScreen(teamId: teamId, songId: songId);
+            },
+          ),
+          GoRoute(
+            path: 'songs/:songId/arrangements/create',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final songId = int.parse(state.pathParameters['songId']!);
+              return ArrangementFormScreen(teamId: teamId, songId: songId);
+            },
+          ),
+          GoRoute(
+            path: 'songs/:songId/arrangements/:arrangementId/edit',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final songId = int.parse(state.pathParameters['songId']!);
+              final arrangementId =
+                  int.parse(state.pathParameters['arrangementId']!);
+              return ArrangementFormScreen(
+                  teamId: teamId,
+                  songId: songId,
+                  arrangementId: arrangementId);
             },
           ),
           // Setlist routes
