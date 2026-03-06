@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:conti_app/core/constants/app_constants.dart';
-import 'web_storage_stub.dart' if (dart.library.html) 'web_storage_impl.dart';
+import 'web_storage_stub.dart' if (dart.library.js_interop) 'web_storage_impl.dart';
 
 class SecureStorage {
   final FlutterSecureStorage? _storage;

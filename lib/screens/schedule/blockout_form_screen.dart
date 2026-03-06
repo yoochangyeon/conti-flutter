@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:conti_app/providers/providers.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
 import '../../widgets/conti_card.dart';
 import '../../widgets/conti_empty_state.dart';
 import '../../widgets/conti_gradient_button.dart';
@@ -51,7 +52,7 @@ class _BlockoutFormScreenState extends ConsumerState<BlockoutFormScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('불참 일정 추가', style: theme.textTheme.titleSmall),
+                  Text('불참 일정을 추가해 주세요', style: theme.textTheme.titleSmall),
                   AppSpacing.gapMd,
                   Row(
                     children: [
@@ -100,7 +101,7 @@ class _BlockoutFormScreenState extends ConsumerState<BlockoutFormScreen> {
                   TextField(
                     controller: _reasonController,
                     decoration: const InputDecoration(
-                      hintText: '사유 (선택)',
+                      hintText: '사유를 입력해 주세요 (선택)',
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     ),
@@ -109,7 +110,7 @@ class _BlockoutFormScreenState extends ConsumerState<BlockoutFormScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ContiGradientButton(
-                      label: '추가',
+                      label: '추가하기',
                       icon: Icons.add_rounded,
                       isLoading: _isAdding,
                       height: 44,
@@ -141,12 +142,16 @@ class _BlockoutFormScreenState extends ConsumerState<BlockoutFormScreen> {
             child: blockoutsAsync.when(
               loading: () =>
                   const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('오류: $e')),
+              error: (e, _) => Center(
+                  child: Text('오류가 발생했어요: $e',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.gray600,
+                      ))),
               data: (blockouts) {
                 if (blockouts.isEmpty) {
                   return const ContiEmptyState(
                     icon: Icons.event_busy_rounded,
-                    title: '등록된 불참 일정이 없습니다',
+                    title: '등록된 불참 일정이 없어요',
                   );
                 }
 
@@ -168,8 +173,7 @@ class _BlockoutFormScreenState extends ConsumerState<BlockoutFormScreen> {
                           children: [
                             Icon(Icons.event_busy_rounded,
                                 size: 20,
-                                color: theme.colorScheme.error
-                                    .withValues(alpha: 0.7)),
+                                color: AppColors.error),
                             AppSpacing.hGapMd,
                             Expanded(
                               child: Column(
@@ -183,16 +187,16 @@ class _BlockoutFormScreenState extends ConsumerState<BlockoutFormScreen> {
                                   if (b.reason != null &&
                                       b.reason!.isNotEmpty)
                                     Text(b.reason!,
-                                        style:
-                                            theme.textTheme.bodySmall),
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: AppColors.gray500,
+                                        )),
                                 ],
                               ),
                             ),
                             IconButton(
                               icon: Icon(Icons.delete_outline_rounded,
                                   size: 20,
-                                  color: theme.colorScheme.error
-                                      .withValues(alpha: 0.7)),
+                                  color: AppColors.error),
                               onPressed: () =>
                                   _deleteBlockout(b.id),
                             ),
@@ -257,13 +261,13 @@ class _BlockoutFormScreenState extends ConsumerState<BlockoutFormScreen> {
         ref.invalidate(memberBlockoutsProvider(
             (teamId: widget.teamId, memberId: widget.memberId)));
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('불참 일정이 추가되었습니다')),
+          const SnackBar(content: Text('불참 일정이 추가되었어요')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content:
-                  Text(response.error?.message ?? '추가에 실패했습니다')),
+                  Text(response.error?.message ?? '추가에 실패했어요')),
         );
       }
     }
@@ -274,13 +278,14 @@ class _BlockoutFormScreenState extends ConsumerState<BlockoutFormScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('불참 일정 삭제'),
-        content: const Text('이 불참 일정을 삭제하시겠습니까?'),
+        content: const Text('이 불참 일정을 삭제할까요?'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               child: const Text('취소')),
           TextButton(
               onPressed: () => Navigator.pop(ctx, true),
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
               child: const Text('삭제')),
         ],
       ),

@@ -1,0 +1,90 @@
+# UI/UX Token Migration Progress
+
+## Completed (Prior Sessions)
+- Slice 1: Design tokens system (AppSpacing, AppRadius, AppPadding, AppColors)
+- Slice 2: Auth + Song + Team base screens
+- Slice 3: Conti + Setlist screens (10 files migrated)
+
+## Baseline Entering This Session
+- SizedBox(height:N) in screens: 32 across 11 files
+- SizedBox(width:N) in screens: 18 across 8 files
+- BorderRadius.circular(N) in screens: 17 across 8 files
+- spacing:N in screens: 8 across 7 files
+- Total: ~75 raw values across 19 files + 1 widget
+
+## Token Mapping Reference
+- SizedBox(height: 2) -> AppSpacing.gapXxs
+- SizedBox(height: 4) -> AppSpacing.gapXs
+- SizedBox(height: 8) -> AppSpacing.gapSm
+- SizedBox(height: 12) -> AppSpacing.gapMd
+- SizedBox(height: 16) -> AppSpacing.gapLg
+- SizedBox(height: 20) -> AppSpacing.gapXl
+- SizedBox(height: 24) -> AppSpacing.gapXxl
+- SizedBox(height: 32) -> AppSpacing.gapXxxl
+- SizedBox(height: 48) -> AppSpacing.gapHuge
+- SizedBox(width: 4) -> AppSpacing.hGapXs
+- SizedBox(width: 8) -> AppSpacing.hGapSm
+- SizedBox(width: 12) -> AppSpacing.hGapMd
+- SizedBox(width: 16) -> AppSpacing.hGapLg
+- BorderRadius.circular(2) -> AppRadius.borderXxs
+- BorderRadius.circular(6) -> AppRadius.borderXs
+- BorderRadius.circular(8) -> AppRadius.borderSm
+- BorderRadius.circular(12) -> AppRadius.borderMd
+- BorderRadius.circular(16) -> AppRadius.borderLg
+- BorderRadius.circular(20) -> AppRadius.borderXl
+- EdgeInsets.all(24) -> AppPadding.paddingForm
+- EdgeInsets.all(16) -> AppPadding.paddingCard
+- EdgeInsets.symmetric(h:8, v:2) -> AppPadding.paddingBadge
+- spacing: 8 -> AppSpacing.sm
+- spacing: 12 -> AppSpacing.md
+
+## Iteration Log
+
+### Iteration 1 (2026-03-06) — Slices 4-5 + Leftover Cleanup
+6 parallel workers, 19 files + 1 widget modified.
+
+**Slice 4 (CueSheet + Schedule):**
+- cuesheet_list_screen.dart: 3 BorderRadius, 1 SizedBox(h), 2 SizedBox(w), 1 spacing → all migrated
+- cuesheet_detail_screen.dart: 6 BorderRadius, 4 SizedBox(h), 10 SizedBox(w) → all migrated
+- cuesheet_form_screen.dart: 8 SizedBox(h), 1 spacing, added app_spacing import → all migrated
+- schedule_board_screen.dart: 1 SizedBox(h), 1 BorderRadius → migrated
+- my_schedule_screen.dart: 2 BorderRadius → migrated
+- schedule_matrix_screen.dart: 1 BorderRadius → migrated
+- schedule_assign_screen.dart: 1 spacing → migrated
+
+**Slice 5 (Profile + Home + Notification):**
+- profile_screen.dart: 8 SizedBox(h), 1 SizedBox(w) → all migrated
+- home_screen.dart: 1 SizedBox(h), 1 BorderRadius → migrated
+- notification_list_screen.dart: 2 SizedBox(h) → migrated
+
+**Leftover Cleanup (Team + Song + Widget):**
+- team_join_screen.dart: 2 SizedBox(h), 1 SizedBox(w) → migrated
+- team_create_screen.dart: 3 SizedBox(h), 1 SizedBox(w) → migrated
+- team_members_screen.dart: 1 SizedBox(h), 1 BorderRadius, 1 spacing → migrated
+- team_more_tab.dart: 2 BorderRadius (1 standard migrated, 1 non-standard circular(10) kept)
+- team_notices_screen.dart: 1 SizedBox(h) → migrated
+- song_form_screen.dart: 1 SizedBox(w), 2 spacing (standard migrated, spacing:6 non-standard kept)
+- song_detail_screen.dart: 1 spacing → migrated
+- setlist_form_screen.dart: 1 SizedBox(w) → migrated
+- member_positions_screen.dart: 1 SizedBox(w), 1 spacing → migrated
+- conti_gradient_button.dart: 1 SizedBox(w) → migrated
+
+**Non-standard values kept as-is:**
+- team_more_tab.dart:196 — BorderRadius.circular(10) (no matching token)
+- song_form_screen.dart:277 — spacing: 6 (no matching token)
+
+**Result:** dart analyze 0 errors, 0 warnings (10 pre-existing info hints only)
+
+### Architect Verification (2026-03-06) — PASS
+Tier: STANDARD (Sonnet). All 7 criteria passed:
+1. No raw SizedBox(height:N) with standard tokens — PASS
+2. No raw SizedBox(width:N) with standard tokens — PASS (4 spinner-sizing correctly retained)
+3. No raw BorderRadius.circular(N) with standard tokens — PASS (1 non-standard circular(10) accepted)
+4. No raw spacing:N (8/12) — PASS (1 non-standard spacing:6 accepted)
+5. app_spacing.dart imported in all 20 files — PASS
+6. dart analyze 0 errors, 0 warnings — PASS
+7. const correctness maintained — PASS
+
+## Migration Complete
+All 5 slices of the Toss-style design token migration are now complete.
+Total files migrated across all sessions: ~30+ screen files + widgets.

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/setlist.dart';
 import 'package:conti_app/models/schedule.dart';
+import '../../core/constants/app_spacing.dart';
 
 class SetlistFormScreen extends ConsumerStatefulWidget {
   final int teamId;
@@ -114,11 +115,11 @@ class _SetlistFormScreenState extends ConsumerState<SetlistFormScreen> {
     final dateFormat = DateFormat('yyyy년 MM월 dd일 (E)', 'ko');
 
     return Scaffold(
-      appBar: AppBar(title: Text(_isEdit ? '콘티 수정' : '콘티 만들기')),
+      appBar: AppBar(title: Text(_isEdit ? '콘티 수정하기' : '새 콘티 만들기')),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(24),
+          padding: AppPadding.paddingForm,
           children: [
             TextFormField(
               controller: _titleController,
@@ -127,7 +128,7 @@ class _SetlistFormScreenState extends ConsumerState<SetlistFormScreen> {
                 hintText: '예: 부활절 특별 예배',
               ),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             // Date picker
             InkWell(
               onTap: _pickDate,
@@ -139,7 +140,7 @@ class _SetlistFormScreenState extends ConsumerState<SetlistFormScreen> {
                 child: Text(dateFormat.format(_worshipDate)),
               ),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             DropdownButtonFormField<String>(
               initialValue: _worshipType,
               decoration: const InputDecoration(labelText: '예배 종류'),
@@ -149,14 +150,14 @@ class _SetlistFormScreenState extends ConsumerState<SetlistFormScreen> {
                   .toList(),
               onChanged: (v) => setState(() => _worshipType = v),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             TextFormField(
               controller: _memoController,
               decoration: const InputDecoration(labelText: '메모'),
               maxLines: 4,
             ),
             if (!_isEdit) ...[
-              const SizedBox(height: 16),
+              AppSpacing.gapLg,
               _TemplateSelector(
                 teamId: widget.teamId,
                 selectedTemplateId: _selectedTemplateId,
@@ -167,12 +168,12 @@ class _SetlistFormScreenState extends ConsumerState<SetlistFormScreen> {
                 }),
               ),
             ],
-            const SizedBox(height: 32),
+            AppSpacing.gapXxxl,
             FilledButton(
               onPressed: _isLoading ? null : _submit,
               child: _isLoading
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text(_isEdit ? '수정' : '만들기'),
+                  : Text(_isEdit ? '수정하기' : '만들기'),
             ),
           ],
         ),
@@ -207,11 +208,11 @@ class _TemplateSelector extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('템플릿으로 시작', style: theme.textTheme.titleSmall),
-            const SizedBox(height: 8),
+            Text('템플릿으로 시작해 보세요', style: theme.textTheme.titleSmall),
+            AppSpacing.gapSm,
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
               children: [
                 ChoiceChip(
                   label: const Text('빈 콘티'),

@@ -9,6 +9,9 @@ class SetlistResponse {
   final int? leaderId;
   final int songCount;
   final DateTime createdAt;
+  final String? setlistType;
+  final String? setlistTypeDisplayName;
+  final int? contiId;
 
   SetlistResponse({
     required this.id,
@@ -19,6 +22,9 @@ class SetlistResponse {
     this.leaderId,
     required this.songCount,
     required this.createdAt,
+    this.setlistType,
+    this.setlistTypeDisplayName,
+    this.contiId,
   });
 
   factory SetlistResponse.fromJson(Map<String, dynamic> json) {
@@ -31,8 +37,14 @@ class SetlistResponse {
       leaderId: json['leaderId'] as int?,
       songCount: json['songCount'] as int? ?? 0,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      setlistType: json['setlistType'] as String?,
+      setlistTypeDisplayName: json['setlistTypeDisplayName'] as String?,
+      contiId: json['contiId'] as int?,
     );
   }
+
+  bool get isConti => setlistType == 'CONTI';
+  bool get isCueSheet => setlistType == 'CUE_SHEET' || setlistType == null;
 
   String get displayTitle {
     if (title != null && title!.isNotEmpty) return title!;
@@ -52,6 +64,9 @@ class SetlistDetailResponse {
   final String? memo;
   final int? creatorId;
   final List<SetlistItemResponse> items;
+  final String? setlistType;
+  final String? setlistTypeDisplayName;
+  final int? contiId;
 
   SetlistDetailResponse({
     required this.id,
@@ -65,6 +80,9 @@ class SetlistDetailResponse {
     this.memo,
     this.creatorId,
     required this.items,
+    this.setlistType,
+    this.setlistTypeDisplayName,
+    this.contiId,
   });
 
   factory SetlistDetailResponse.fromJson(Map<String, dynamic> json) {
@@ -84,8 +102,14 @@ class SetlistDetailResponse {
                   SetlistItemResponse.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      setlistType: json['setlistType'] as String?,
+      setlistTypeDisplayName: json['setlistTypeDisplayName'] as String?,
+      contiId: json['contiId'] as int?,
     );
   }
+
+  bool get isConti => setlistType == 'CONTI';
+  bool get isCueSheet => setlistType == 'CUE_SHEET' || setlistType == null;
 
   String get displayTitle {
     if (title != null && title!.isNotEmpty) return title!;
@@ -152,6 +176,7 @@ class SetlistCreateRequest {
   final String? worshipType;
   final int? leaderId;
   final String? memo;
+  final String? setlistType;
 
   SetlistCreateRequest({
     this.title,
@@ -159,6 +184,7 @@ class SetlistCreateRequest {
     this.worshipType,
     this.leaderId,
     this.memo,
+    this.setlistType,
   });
 
   Map<String, dynamic> toJson() => {
@@ -167,6 +193,7 @@ class SetlistCreateRequest {
     if (worshipType != null) 'worshipType': worshipType,
     if (leaderId != null) 'leaderId': leaderId,
     if (memo != null) 'memo': memo,
+    if (setlistType != null) 'setlistType': setlistType,
   };
 }
 

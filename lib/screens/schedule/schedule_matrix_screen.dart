@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/schedule.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
 
 class ScheduleMatrixScreen extends ConsumerStatefulWidget {
   final int teamId;
@@ -51,12 +52,12 @@ class _ScheduleMatrixScreenState extends ConsumerState<ScheduleMatrixScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Schedule Matrix'),
+        title: const Text('스케줄 매트릭스'),
         actions: [
           IconButton(
             icon: const Icon(Icons.chevron_left_rounded),
             onPressed: () => _shiftWeeks(-4),
-            tooltip: 'Previous 4 weeks',
+            tooltip: '이전 4주',
           ),
           IconButton(
             icon: const Icon(Icons.today_rounded),
@@ -67,18 +68,23 @@ class _ScheduleMatrixScreenState extends ConsumerState<ScheduleMatrixScreen> {
                 _toDate = _fromDate.add(const Duration(days: 28));
               });
             },
-            tooltip: 'Today',
+            tooltip: '오늘',
           ),
           IconButton(
             icon: const Icon(Icons.chevron_right_rounded),
             onPressed: () => _shiftWeeks(4),
-            tooltip: 'Next 4 weeks',
+            tooltip: '다음 4주',
           ),
         ],
       ),
       body: matrixAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => Center(
+          child: Text('오류가 발생했어요: $e',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppColors.gray600,
+              )),
+        ),
         data: (matrix) {
           if (matrix.dates.isEmpty) {
             return Center(
@@ -86,21 +92,19 @@ class _ScheduleMatrixScreenState extends ConsumerState<ScheduleMatrixScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.grid_view_rounded,
-                      size: 48,
-                      color: theme.colorScheme.onSurfaceVariant
-                          .withValues(alpha: 0.5)),
+                      size: 48, color: AppColors.gray300),
                   AppSpacing.gapMd,
                   Text(
-                    'No schedules in this period',
+                    '이 기간에는 스케줄이 없어요',
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                      color: AppColors.gray500,
                     ),
                   ),
                   AppSpacing.gapSm,
                   Text(
                     '${DateFormat('M/d').format(_fromDate)} - ${DateFormat('M/d').format(_toDate)}',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                      color: AppColors.gray400,
                     ),
                   ),
                 ],
@@ -163,9 +167,8 @@ class _MatrixGrid extends StatelessWidget {
                   height: cellHeight,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      border: Border.all(
-                          color: theme.dividerColor.withValues(alpha: 0.3)),
+                      color: AppColors.gray100,
+                      border: Border.all(color: AppColors.gray200),
                     ),
                   ),
                 ),
@@ -183,11 +186,8 @@ class _MatrixGrid extends StatelessWidget {
                       height: cellHeight,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer
-                              .withValues(alpha: 0.3),
-                          border: Border.all(
-                              color:
-                                  theme.dividerColor.withValues(alpha: 0.3)),
+                          color: AppColors.primaryLight,
+                          border: Border.all(color: AppColors.gray200),
                         ),
                         padding: const EdgeInsets.all(4),
                         child: Column(
@@ -205,8 +205,7 @@ class _MatrixGrid extends StatelessWidget {
                                 info.worshipTypeDisplayName!,
                                 style: theme.textTheme.labelSmall?.copyWith(
                                   fontSize: 9,
-                                  color:
-                                      theme.colorScheme.onSurfaceVariant,
+                                  color: AppColors.gray600,
                                 ),
                                 textAlign: TextAlign.center,
                                 maxLines: 1,
@@ -233,11 +232,8 @@ class _MatrixGrid extends StatelessWidget {
                     height: cellHeight,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest
-                            .withValues(alpha: 0.5),
-                        border: Border.all(
-                            color:
-                                theme.dividerColor.withValues(alpha: 0.3)),
+                        color: AppColors.gray50,
+                        border: Border.all(color: AppColors.gray200),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       alignment: Alignment.center,
@@ -269,9 +265,7 @@ class _MatrixGrid extends StatelessWidget {
                       height: cellHeight,
                       child: Container(
                         decoration: BoxDecoration(
-                          border: Border.all(
-                              color: theme.dividerColor
-                                  .withValues(alpha: 0.3)),
+                          border: Border.all(color: AppColors.gray200),
                         ),
                         padding: const EdgeInsets.all(2),
                         child: cell.members.isEmpty
@@ -306,14 +300,14 @@ class _MemberChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final statusColor = _statusColor(member.status, theme);
+    final statusColor = _statusColor(member.status);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 1),
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
         color: statusColor.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
       child: Text(
         member.memberName,
@@ -328,15 +322,15 @@ class _MemberChip extends StatelessWidget {
     );
   }
 
-  Color _statusColor(String status, ThemeData theme) {
+  Color _statusColor(String status) {
     switch (status) {
       case 'ACCEPTED':
-        return Colors.green;
+        return AppColors.success;
       case 'DECLINED':
-        return theme.colorScheme.error;
+        return AppColors.error;
       case 'PENDING':
       default:
-        return theme.colorScheme.onSurfaceVariant;
+        return AppColors.gray500;
     }
   }
 }

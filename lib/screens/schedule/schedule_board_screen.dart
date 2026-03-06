@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/schedule.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
 import '../../widgets/conti_card.dart';
 import '../../widgets/conti_empty_state.dart';
 import '../../widgets/conti_error_state.dart';
@@ -44,17 +45,17 @@ class ScheduleBoardScreen extends ConsumerWidget {
             FloatingActionButton.small(
               heroTag: 'signup',
               onPressed: () => _showSignupDialog(context, ref),
-              tooltip: 'Self Signup',
+              tooltip: '참여 신청',
               child: const Icon(Icons.how_to_reg_rounded),
             ),
-          if (!isAdmin) const SizedBox(height: 8),
+          if (!isAdmin) AppSpacing.gapSm,
           if (isAdmin)
             FloatingActionButton.extended(
               heroTag: 'assign',
               onPressed: () => context.push(
                   '/teams/$teamId/setlists/$setlistId/schedule/assign'),
               icon: const Icon(Icons.person_add_rounded),
-              label: const Text('배정'),
+              label: const Text('봉사 배정'),
             ),
         ],
       ),
@@ -71,8 +72,8 @@ class ScheduleBoardScreen extends ConsumerWidget {
           if (schedules.isEmpty) {
             return ContiEmptyState(
               icon: Icons.event_available_rounded,
-              title: '배정된 멤버가 없습니다',
-              subtitle: isAdmin ? '멤버를 배정해주세요' : null,
+              title: '아직 배정된 멤버가 없어요',
+              subtitle: isAdmin ? '멤버를 배정해 주세요' : null,
             );
           }
 
@@ -97,7 +98,7 @@ class ScheduleBoardScreen extends ConsumerWidget {
                       child: Text(
                         entry.key,
                         style: theme.textTheme.titleSmall?.copyWith(
-                          color: theme.colorScheme.primary,
+                          color: AppColors.primary,
                         ),
                       ),
                     ),
@@ -129,15 +130,14 @@ class ScheduleBoardScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('배정 취소'),
-        content: const Text('이 멤버의 배정을 취소하시겠습니까?'),
+        content: const Text('이 멤버의 배정을 취소할까요?'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               child: const Text('취소')),
           TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: TextButton.styleFrom(
-                  foregroundColor: Theme.of(context).colorScheme.error),
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
               child: const Text('삭제')),
         ],
       ),
@@ -150,7 +150,7 @@ class ScheduleBoardScreen extends ConsumerWidget {
             (teamId: teamId, setlistId: setlistId)));
       } else if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.error?.message ?? '배정 취소에 실패했습니다')),
+          SnackBar(content: Text(response.error?.message ?? '배정 취소에 실패했어요')),
         );
       }
     }
@@ -161,7 +161,7 @@ class ScheduleBoardScreen extends ConsumerWidget {
     final selected = await showDialog<MemberPosition>(
       context: context,
       builder: (ctx) => SimpleDialog(
-        title: const Text('Self Signup'),
+        title: const Text('참여 신청'),
         children: positions.map((p) {
           return SimpleDialogOption(
             onPressed: () => Navigator.pop(ctx, p),
@@ -187,12 +187,12 @@ class ScheduleBoardScreen extends ConsumerWidget {
       ref.invalidate(setlistSchedulesProvider(
           (teamId: teamId, setlistId: setlistId)));
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${selected.displayName} Signed up')),
+        SnackBar(content: Text('${selected.displayName}으로 참여 신청했어요')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(response.error?.message ?? 'Signup failed')),
+            content: Text(response.error?.message ?? '참여 신청에 실패했어요')),
       );
     }
   }
@@ -214,7 +214,7 @@ class _ScheduleMemberTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final statusColor = _statusColor(schedule.status, theme);
+    final statusColor = _statusColor(schedule.status);
 
     return ContiCard(
       padding: const EdgeInsets.symmetric(
@@ -224,7 +224,7 @@ class _ScheduleMemberTile extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: theme.colorScheme.primaryContainer,
+            backgroundColor: AppColors.primaryLight,
             backgroundImage: schedule.profileImage != null
                 ? NetworkImage(schedule.profileImage!)
                 : null,
@@ -233,8 +233,7 @@ class _ScheduleMemberTile extends StatelessWidget {
                     schedule.memberName.isNotEmpty
                         ? schedule.memberName[0]
                         : '?',
-                    style: TextStyle(
-                        color: theme.colorScheme.onPrimaryContainer))
+                    style: const TextStyle(color: AppColors.primary))
                 : null,
           ),
           AppSpacing.hGapMd,
@@ -248,7 +247,7 @@ class _ScheduleMemberTile extends StatelessWidget {
                   Text(
                     schedule.declinedReason!,
                     style: theme.textTheme.bodySmall
-                        ?.copyWith(color: theme.colorScheme.error),
+                        ?.copyWith(color: AppColors.error),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -258,8 +257,8 @@ class _ScheduleMemberTile extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(8),
+              color: statusColor.withValues(alpha: 0.12),
+              borderRadius: AppRadius.borderSm,
             ),
             child: Text(
               schedule.statusDisplayName,
@@ -272,8 +271,7 @@ class _ScheduleMemberTile extends StatelessWidget {
           if (isAdmin && onRemove != null)
             IconButton(
               icon: Icon(Icons.close_rounded,
-                  size: 18,
-                  color: theme.colorScheme.error.withValues(alpha: 0.7)),
+                  size: 18, color: AppColors.error),
               onPressed: onRemove,
             ),
         ],
@@ -281,15 +279,15 @@ class _ScheduleMemberTile extends StatelessWidget {
     );
   }
 
-  Color _statusColor(String status, ThemeData theme) {
+  Color _statusColor(String status) {
     switch (status) {
       case 'ACCEPTED':
-        return Colors.green;
+        return AppColors.success;
       case 'DECLINED':
-        return theme.colorScheme.error;
+        return AppColors.error;
       case 'PENDING':
       default:
-        return theme.colorScheme.onSurfaceVariant;
+        return AppColors.gray500;
     }
   }
 }

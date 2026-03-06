@@ -21,7 +21,7 @@ class SongStatsScreen extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('곡 사용 통계')),
+      appBar: AppBar(title: const Text('찬양 사용 통계')),
       body: topSongsAsync.when(
         loading: () => const Padding(
           padding: EdgeInsets.only(top: AppSpacing.lg),
@@ -32,7 +32,7 @@ class SongStatsScreen extends ConsumerWidget {
         ),
         data: (songs) {
           if (songs.isEmpty) {
-            return const Center(child: Text('사용 통계가 없습니다.'));
+            return const Center(child: Text('아직 사용 통계가 없어요'));
           }
           return ListView(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -84,12 +84,11 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final totalUsage = songs.fold<int>(0, (sum, s) => sum + s.usageCount);
     final uniqueSongs = songs.length;
 
     return ContiCard(
-      borderGradient: AppTheme.primaryGradient,
+      borderGradient: null,
       child: Row(
         children: [
           Expanded(
@@ -102,7 +101,7 @@ class _SummaryCard extends StatelessWidget {
           Container(
             width: 1,
             height: 40,
-            color: theme.colorScheme.outline.withValues(alpha: 0.15),
+            color: AppColors.gray200,
           ),
           Expanded(
             child: _SummaryItem(
@@ -134,14 +133,14 @@ class _SummaryItem extends StatelessWidget {
     return Column(
       children: [
         Icon(icon, size: 24, color: theme.colorScheme.primary),
-        const SizedBox(height: 8),
+        AppSpacing.gapSm,
         Text(
           value,
           style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w800,
           ),
         ),
-        const SizedBox(height: 2),
+        AppSpacing.gapXxs,
         Text(
           label,
           style: theme.textTheme.labelSmall,
@@ -181,7 +180,7 @@ class _UsageBarChart extends StatelessWidget {
                   return BarTooltipItem(
                     '${song.title}\n${song.usageCount}회',
                     theme.textTheme.labelSmall!.copyWith(
-                      color: Colors.white,
+                      color: AppColors.white,
                       fontWeight: FontWeight.w600,
                     ),
                   );
@@ -242,7 +241,7 @@ class _UsageBarChart extends StatelessWidget {
               drawVerticalLine: true,
               drawHorizontalLine: false,
               getDrawingVerticalLine: (_) => FlLine(
-                color: theme.colorScheme.outline.withValues(alpha: 0.08),
+                color: AppColors.gray100,
                 strokeWidth: 1,
               ),
             ),
@@ -255,15 +254,10 @@ class _UsageBarChart extends StatelessWidget {
                   BarChartRodData(
                     toY: song.usageCount.toDouble(),
                     width: 20,
-                    borderRadius: const BorderRadius.horizontal(
-                      right: Radius.circular(6),
+                    borderRadius: BorderRadius.horizontal(
+                      right: Radius.circular(AppRadius.xs),
                     ),
-                    gradient: LinearGradient(
-                      colors: [
-                        AppTheme.primaryColor.withValues(alpha: 0.7 + 0.3 * (1 - i / songs.length)),
-                        AppTheme.secondaryColor.withValues(alpha: 0.7 + 0.3 * (1 - i / songs.length)),
-                      ],
-                    ),
+                    color: AppColors.primary.withValues(alpha: 0.7 + 0.3 * (1 - i / songs.length)),
                   ),
                 ],
               );
@@ -288,20 +282,7 @@ class _KeyDistributionChart extends StatelessWidget {
 
   const _KeyDistributionChart({required this.songs});
 
-  static const _keyColors = [
-    AppTheme.primaryColor,
-    AppTheme.secondaryColor,
-    AppTheme.tertiaryColor,
-    Color(0xFF4CAF50),
-    Color(0xFFFF9800),
-    Color(0xFF00BCD4),
-    Color(0xFF9C27B0),
-    Color(0xFFFF5722),
-    Color(0xFF607D8B),
-    Color(0xFF795548),
-    Color(0xFFCDDC39),
-    Color(0xFF3F51B5),
-  ];
+  static const _keyColors = AppColors.accentPalette;
 
   @override
   Widget build(BuildContext context) {
@@ -334,7 +315,7 @@ class _KeyDistributionChart extends StatelessWidget {
                     titleStyle: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: AppColors.white,
                     ),
                     color: _keyColors[i % _keyColors.length],
                     radius: 50,
@@ -359,10 +340,10 @@ class _KeyDistributionChart extends StatelessWidget {
                     height: 10,
                     decoration: BoxDecoration(
                       color: _keyColors[i % _keyColors.length],
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: AppRadius.borderXxs,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  AppSpacing.hGapXs,
                   Text(
                     '${e.key} (${e.value})',
                     style: theme.textTheme.labelSmall?.copyWith(
@@ -412,10 +393,9 @@ class _RankedSongTile extends StatelessWidget {
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    gradient: rank <= 3 ? AppTheme.primaryGradient : null,
-                    color: rank > 3
-                        ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                        : null,
+                    color: rank <= 3
+                        ? AppColors.primary
+                        : AppColors.primaryLight,
                     borderRadius: AppRadius.borderSm,
                   ),
                   child: Center(
@@ -423,8 +403,8 @@ class _RankedSongTile extends StatelessWidget {
                       '$rank',
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: rank <= 3
-                            ? Colors.white
-                            : theme.colorScheme.primary,
+                            ? AppColors.white
+                            : AppColors.primary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -458,14 +438,13 @@ class _RankedSongTile extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.tertiary
-                          .withValues(alpha: 0.12),
+                      color: AppColors.teal.withValues(alpha: 0.12),
                       borderRadius: AppRadius.borderSm,
                     ),
                     child: Text(
                       song.originalKey!,
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.tertiary,
+                        color: AppColors.teal,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -496,16 +475,16 @@ class _RankedSongTile extends StatelessWidget {
             AppSpacing.gapSm,
             // Usage bar
             ClipRRect(
-              borderRadius: BorderRadius.circular(3),
+              borderRadius: AppRadius.borderXxs,
               child: LinearProgressIndicator(
                 value: ratio,
                 minHeight: 4,
                 backgroundColor:
-                    theme.colorScheme.primary.withValues(alpha: 0.06),
+                    AppColors.primaryLight,
                 valueColor: AlwaysStoppedAnimation<Color>(
                   Color.lerp(
-                    AppTheme.secondaryColor,
-                    AppTheme.primaryColor,
+                    AppColors.teal,
+                    AppColors.primary,
                     ratio,
                   )!,
                 ),

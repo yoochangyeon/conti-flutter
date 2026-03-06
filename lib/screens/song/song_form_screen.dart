@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:conti_app/core/constants/app_constants.dart';
+import '../../core/constants/app_spacing.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/song.dart';
 
@@ -132,23 +133,23 @@ class _SongFormScreenState extends ConsumerState<SongFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isEdit ? '찬양 수정' : '찬양 추가')),
+      appBar: AppBar(title: Text(_isEdit ? '찬양 수정하기' : '새 찬양 추가하기')),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(24),
+          padding: AppPadding.paddingForm,
           children: [
             TextFormField(
               controller: _titleController,
               decoration: const InputDecoration(labelText: '제목 *'),
-              validator: (v) => v == null || v.trim().isEmpty ? '제목을 입력해주세요' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? '제목을 입력해 주세요' : null,
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             TextFormField(
               controller: _artistController,
               decoration: const InputDecoration(labelText: '아티스트'),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             Row(
               children: [
                 Expanded(
@@ -161,24 +162,30 @@ class _SongFormScreenState extends ConsumerState<SongFormScreen> {
                     onChanged: (v) => setState(() => _selectedKey = v),
                   ),
                 ),
-                const SizedBox(width: 16),
+                AppSpacing.hGapLg,
                 Expanded(
                   child: TextFormField(
                     controller: _bpmController,
-                    decoration: const InputDecoration(labelText: 'BPM'),
+                    decoration: const InputDecoration(
+                      labelText: '빠르기',
+                      hintText: 'BPM',
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             // Tags
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _tagController,
-                    decoration: const InputDecoration(labelText: '태그 추가'),
+                    decoration: const InputDecoration(
+                      labelText: '태그',
+                      hintText: '태그를 입력해 보세요',
+                    ),
                     onSubmitted: (_) => _addTag(),
                   ),
                 ),
@@ -186,9 +193,9 @@ class _SongFormScreenState extends ConsumerState<SongFormScreen> {
               ],
             ),
             if (_tags.isNotEmpty) ...[
-              const SizedBox(height: 8),
+              AppSpacing.gapSm,
               Wrap(
-                spacing: 8,
+                spacing: AppSpacing.sm,
                 children: _tags
                     .map((tag) => Chip(
                           label: Text(tag),
@@ -207,28 +214,34 @@ class _SongFormScreenState extends ConsumerState<SongFormScreen> {
                 }
               },
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             TextFormField(
               controller: _youtubeController,
-              decoration: const InputDecoration(labelText: 'YouTube URL'),
+              decoration: const InputDecoration(
+                labelText: '유튜브 링크',
+                hintText: 'https://youtube.com/...',
+              ),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             TextFormField(
               controller: _musicUrlController,
-              decoration: const InputDecoration(labelText: '음원 URL'),
+              decoration: const InputDecoration(
+                labelText: '음원 링크',
+                hintText: 'https://...',
+              ),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             TextFormField(
               controller: _memoController,
               decoration: const InputDecoration(labelText: '메모'),
               maxLines: 4,
             ),
-            const SizedBox(height: 32),
+            AppSpacing.gapXxxl,
             FilledButton(
               onPressed: _isLoading ? null : _submit,
               child: _isLoading
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text(_isEdit ? '수정' : '추가'),
+                  : Text(_isEdit ? '수정하기' : '추가하기'),
             ),
           ],
         ),

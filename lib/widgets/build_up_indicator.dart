@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/constants/app_spacing.dart';
 
 class BuildUpIndicator extends StatelessWidget {
   final int level;
@@ -42,7 +43,7 @@ class BuildUpIndicator extends StatelessWidget {
           height: size * 0.4,
           margin: EdgeInsets.only(right: index < maxLevel - 1 ? 3 : 0),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(size),
+            borderRadius: AppRadius.borderFull,
             color: isActive
                 ? activeColor
                 : activeColor.withValues(alpha: 0.15),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:conti_app/core/constants/app_constants.dart';
+import '../../core/constants/app_spacing.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/song.dart';
 
@@ -129,7 +130,7 @@ class _ArrangementFormScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
-                  response.error?.message ?? '저장에 실패했습니다')),
+                  response.error?.message ?? '저장하지 못했어요')),
         );
       }
     }
@@ -138,11 +139,11 @@ class _ArrangementFormScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isEdit ? '편곡 수정' : '편곡 추가')),
+      appBar: AppBar(title: Text(_isEdit ? '편곡 수정하기' : '새 편곡 추가하기')),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(24),
+          padding: AppPadding.paddingForm,
           children: [
             TextFormField(
               controller: _nameController,
@@ -151,9 +152,9 @@ class _ArrangementFormScreenState
                 hintText: '예: 풀밴드 버전, 어쿠스틱 버전',
               ),
               validator: (v) =>
-                  v == null || v.trim().isEmpty ? '이름을 입력해주세요' : null,
+                  v == null || v.trim().isEmpty ? '이름을 입력해 주세요' : null,
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             Row(
               children: [
                 Expanded(
@@ -169,17 +170,20 @@ class _ArrangementFormScreenState
                     onChanged: (v) => setState(() => _selectedKey = v),
                   ),
                 ),
-                const SizedBox(width: 16),
+                AppSpacing.hGapLg,
                 Expanded(
                   child: TextFormField(
                     controller: _bpmController,
-                    decoration: const InputDecoration(labelText: 'BPM'),
+                    decoration: const InputDecoration(
+                      labelText: '빠르기',
+                      hintText: 'BPM',
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             Row(
               children: [
                 Expanded(
@@ -191,7 +195,7 @@ class _ArrangementFormScreenState
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                AppSpacing.hGapLg,
                 Expanded(
                   child: TextFormField(
                     controller: _durationController,
@@ -204,13 +208,13 @@ class _ArrangementFormScreenState
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             TextFormField(
               controller: _descriptionController,
               decoration: const InputDecoration(labelText: '설명'),
               maxLines: 3,
             ),
-            const SizedBox(height: 32),
+            AppSpacing.gapXxxl,
             FilledButton(
               onPressed: _isLoading ? null : _submit,
               child: _isLoading
@@ -218,7 +222,7 @@ class _ArrangementFormScreenState
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text(_isEdit ? '수정' : '추가'),
+                  : Text(_isEdit ? '수정하기' : '추가하기'),
             ),
           ],
         ),

@@ -11,6 +11,7 @@ class SetlistListParams {
   final String? worshipType;
   final DateTime? fromDate;
   final DateTime? toDate;
+  final String? setlistType;
 
   SetlistListParams({
     required this.teamId,
@@ -18,6 +19,7 @@ class SetlistListParams {
     this.worshipType,
     this.fromDate,
     this.toDate,
+    this.setlistType,
   });
 
   @override
@@ -26,10 +28,11 @@ class SetlistListParams {
       other is SetlistListParams &&
           teamId == other.teamId &&
           page == other.page &&
-          worshipType == other.worshipType;
+          worshipType == other.worshipType &&
+          setlistType == other.setlistType;
 
   @override
-  int get hashCode => Object.hash(teamId, page, worshipType);
+  int get hashCode => Object.hash(teamId, page, worshipType, setlistType);
 }
 
 final setlistsProvider = FutureProvider.family<PagedData<SetlistResponse>, SetlistListParams>(
@@ -39,6 +42,7 @@ final setlistsProvider = FutureProvider.family<PagedData<SetlistResponse>, Setli
     'page': params.page,
     'size': 20,
     if (params.worshipType != null) 'worshipType': params.worshipType,
+    if (params.setlistType != null) 'setlistType': params.setlistType,
     if (params.fromDate != null)
       'fromDate': params.fromDate!.toIso8601String().split('T')[0],
     if (params.toDate != null)

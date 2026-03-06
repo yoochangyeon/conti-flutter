@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/team.dart';
+import 'package:conti_app/core/constants/app_constants.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
 import '../../widgets/conti_empty_state.dart';
 import '../../widgets/conti_error_state.dart';
 import '../../widgets/conti_skeleton.dart';
@@ -32,8 +34,8 @@ class TeamMembersScreen extends ConsumerWidget {
           if (members.isEmpty) {
             return const ContiEmptyState(
               icon: Icons.people_outline_rounded,
-              title: '팀원이 없습니다',
-              subtitle: '초대 코드를 공유하여 팀원을 초대하세요',
+              title: '아직 팀원이 없어요',
+              subtitle: '초대 코드를 공유해서 팀원을 초대해 보세요',
             );
           }
           return RefreshIndicator(
@@ -47,12 +49,15 @@ class TeamMembersScreen extends ConsumerWidget {
                   margin: const EdgeInsets.only(bottom: 8),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: theme.colorScheme.primaryContainer,
+                      backgroundColor: AppColors.primaryLight,
                       backgroundImage: member.profileImage != null
                           ? NetworkImage(member.profileImage!)
                           : null,
                       child: member.profileImage == null
-                          ? Text(member.userName.isNotEmpty ? member.userName[0] : '?')
+                          ? Text(
+                              member.userName.isNotEmpty ? member.userName[0] : '?',
+                              style: const TextStyle(color: AppColors.primary),
+                            )
                           : null,
                     ),
                     title: Text(member.userName),
@@ -61,9 +66,9 @@ class TeamMembersScreen extends ConsumerWidget {
                       children: [
                         Text(member.roleDisplayName),
                         if (member.positions.isNotEmpty) ...[
-                          const SizedBox(height: 4),
+                          AppSpacing.gapXs,
                           Wrap(
-                            spacing: 4,
+                            spacing: AppSpacing.xs,
                             runSpacing: 4,
                             children: member.positions.map((p) {
                               return Container(
@@ -71,18 +76,17 @@ class TeamMembersScreen extends ConsumerWidget {
                                     horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: p.isPrimary
-                                      ? theme.colorScheme.primary
-                                          .withValues(alpha: 0.15)
-                                      : theme.colorScheme.surfaceContainerHigh,
-                                  borderRadius: BorderRadius.circular(6),
+                                      ? AppColors.primaryLight
+                                      : AppColors.gray100,
+                                  borderRadius: AppRadius.borderXs,
                                 ),
                                 child: Text(
                                   p.displayName,
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: p.isPrimary
-                                        ? theme.colorScheme.primary
-                                        : theme.colorScheme.onSurfaceVariant,
+                                        ? AppColors.primary
+                                        : AppColors.gray600,
                                     fontWeight: p.isPrimary
                                         ? FontWeight.w600
                                         : FontWeight.w400,
@@ -128,18 +132,22 @@ class TeamMembersScreen extends ConsumerWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.remove_circle_outline, color: Theme.of(context).colorScheme.error),
-              title: Text('멤버 제거', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              leading: Icon(Icons.remove_circle_outline, color: AppColors.error),
+              title: Text('멤버 제거', style: TextStyle(color: AppColors.error)),
               onTap: () async {
                 Navigator.pop(context);
                 final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (ctx) => AlertDialog(
                     title: const Text('멤버 제거'),
-                    content: Text('${member.userName}님을 팀에서 제거하시겠습니까?'),
+                    content: Text('${member.userName}님을 팀에서 제거할까요?'),
                     actions: [
                       TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('취소')),
-                      TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('제거')),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        style: TextButton.styleFrom(foregroundColor: AppColors.error),
+                        child: const Text('제거'),
+                      ),
                     ],
                   ),
                 );
@@ -150,7 +158,7 @@ class TeamMembersScreen extends ConsumerWidget {
                     ref.invalidate(teamMembersProvider(teamId));
                   } else if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(response.error?.message ?? '멤버 제거에 실패했습니다')),
+                      SnackBar(content: Text(response.error?.message ?? '멤버 제거에 실패했어요')),
                     );
                   }
                 }
@@ -163,17 +171,18 @@ class TeamMembersScreen extends ConsumerWidget {
   }
 
   Widget? _buildRoleBadge(ThemeData theme, TeamMemberResponse member) {
-    final (color, bgColor, label) = switch (member.role) {
-      'ADMIN' => (theme.colorScheme.onPrimaryContainer, theme.colorScheme.primaryContainer, '관리자'),
-      'EDITOR' => (theme.colorScheme.onTertiaryContainer, theme.colorScheme.tertiaryContainer, '편집자'),
-      'SCHEDULER' => (theme.colorScheme.onSecondaryContainer, theme.colorScheme.secondaryContainer, '스케줄러'),
-      _ => (null, null, null),
+    final roleDisplay = AppConstants.roleNames[member.role];
+    final (color, bgColor) = switch (member.role) {
+      'ADMIN' => (AppColors.primary, AppColors.primaryLight),
+      'EDITOR' => (AppColors.purple, const Color(0xFFF3EEFF)),
+      'SCHEDULER' => (AppColors.teal, const Color(0xFFE0F7F6)),
+      _ => (null, null),
     };
 
-    if (color == null) return null;
+    if (color == null || roleDisplay == null) return null;
 
     return Chip(
-      label: Text(label!),
+      label: Text(roleDisplay),
       backgroundColor: bgColor,
       labelStyle: TextStyle(color: color, fontSize: 12),
     );
@@ -181,16 +190,16 @@ class TeamMembersScreen extends ConsumerWidget {
 
   void _showRoleChangeDialog(BuildContext context, WidgetRef ref, TeamMemberResponse member) {
     final roles = [
-      ('ADMIN', '관리자', '모든 권한'),
-      ('EDITOR', '편집자', '곡/콘티 편집, 노트 작성'),
-      ('SCHEDULER', '스케줄러', '스케줄 관리'),
-      ('VIEWER', '뷰어', '조회만 가능'),
+      ('ADMIN', '관리자', '모든 권한을 가져요'),
+      ('EDITOR', '편집자', '곡과 콘티를 편집할 수 있어요'),
+      ('SCHEDULER', '스케줄러', '스케줄을 관리할 수 있어요'),
+      ('VIEWER', '멤버', '조회만 가능해요'),
     ];
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('${member.userName} 역할 변경'),
+        title: Text('${member.userName}님 역할 변경'),
         content: SizedBox(
           width: double.maxFinite,
           child: Column(
@@ -201,7 +210,7 @@ class TeamMembersScreen extends ConsumerWidget {
               return ListTile(
                 leading: Icon(
                   isSelected ? Icons.check_circle : Icons.circle_outlined,
-                  color: isSelected ? Theme.of(ctx).colorScheme.primary : null,
+                  color: isSelected ? AppColors.primary : AppColors.gray400,
                 ),
                 title: Text(label),
                 subtitle: Text(desc, style: const TextStyle(fontSize: 12)),

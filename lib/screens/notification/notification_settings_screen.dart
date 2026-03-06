@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:conti_app/core/constants/app_spacing.dart';
+import 'package:conti_app/core/constants/app_theme.dart';
 import 'package:conti_app/models/notification.dart';
 
 final _notificationSettingsProvider =
@@ -49,17 +50,23 @@ class NotificationSettingsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
             child: Text(
-              '알림 유형별 설정',
+              '받고 싶은 알림을 선택해 주세요',
               style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+                color: AppColors.gray600,
               ),
             ),
           ),
           for (final type in NotificationType.values)
             SwitchListTile(
               title: Text(type.displayName),
-              subtitle: Text(_subtitleForType(type)),
+              subtitle: Text(
+                _subtitleForType(type),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: AppColors.gray500,
+                ),
+              ),
               value: settings[type.name] ?? true,
+              activeTrackColor: AppColors.primary,
               onChanged: (_) =>
                   ref.read(_notificationSettingsProvider.notifier).toggle(type.name),
             ),
@@ -70,10 +77,10 @@ class NotificationSettingsScreen extends ConsumerWidget {
 
   String _subtitleForType(NotificationType type) {
     return switch (type) {
-      NotificationType.scheduleAssigned => '봉사에 배정되었을 때 알림',
-      NotificationType.scheduleResponse => '멤버가 배정에 응답했을 때 알림',
-      NotificationType.scheduleReminder => '봉사 D-1, D-2 리마인더',
-      NotificationType.setlistUpdated => '콘티가 수정되었을 때 알림',
+      NotificationType.scheduleAssigned => '봉사에 배정되었을 때 알려드려요',
+      NotificationType.scheduleResponse => '멤버가 배정에 응답했을 때 알려드려요',
+      NotificationType.scheduleReminder => '봉사 D-1, D-2 리마인더를 보내드려요',
+      NotificationType.setlistUpdated => '콘티가 수정되었을 때 알려드려요',
     };
   }
 }

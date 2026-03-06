@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../core/constants/app_spacing.dart';
+import '../core/constants/app_theme.dart';
 
 class ContiSectionHeader extends StatelessWidget {
   final String title;
@@ -9,7 +11,7 @@ class ContiSectionHeader extends StatelessWidget {
     super.key,
     required this.title,
     this.trailing,
-    this.padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+    this.padding = const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.sm),
   });
 
   @override
@@ -21,15 +23,12 @@ class ContiSectionHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.5),
-                  letterSpacing: 0.5,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.gray500,
+              letterSpacing: -0.1,
+            ),
           ),
           ?trailing,
         ],

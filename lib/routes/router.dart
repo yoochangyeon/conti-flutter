@@ -5,8 +5,8 @@ import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/screens/auth/login_screen.dart';
 import 'package:conti_app/screens/auth/splash_screen.dart';
 import 'package:conti_app/screens/home/home_screen.dart';
+import 'package:conti_app/screens/team/team_shell_screen.dart';
 import 'package:conti_app/screens/team/team_create_screen.dart';
-import 'package:conti_app/screens/team/team_detail_screen.dart';
 import 'package:conti_app/screens/team/team_join_screen.dart';
 import 'package:conti_app/screens/team/team_members_screen.dart';
 import 'package:conti_app/screens/song/song_list_screen.dart';
@@ -28,6 +28,12 @@ import 'package:conti_app/screens/team/member_positions_screen.dart';
 import 'package:conti_app/screens/profile/profile_screen.dart';
 import 'package:conti_app/screens/team/team_notices_screen.dart';
 import 'package:conti_app/screens/setlist/setlist_notes_screen.dart';
+import 'package:conti_app/screens/conti/conti_list_screen.dart';
+import 'package:conti_app/screens/conti/conti_detail_screen.dart';
+import 'package:conti_app/screens/conti/conti_form_screen.dart';
+import 'package:conti_app/screens/cuesheet/cuesheet_list_screen.dart';
+import 'package:conti_app/screens/cuesheet/cuesheet_detail_screen.dart';
+import 'package:conti_app/screens/cuesheet/cuesheet_form_screen.dart';
 import 'package:conti_app/screens/notification/notification_list_screen.dart';
 import 'package:conti_app/screens/notification/notification_settings_screen.dart';
 
@@ -82,13 +88,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/teams/join',
         builder: (context, state) => const TeamJoinScreen(),
       ),
+      // ─── Team Shell (with bottom navigation) ───
       GoRoute(
         path: '/teams/:teamId',
         builder: (context, state) {
           final teamId = int.parse(state.pathParameters['teamId']!);
-          return TeamDetailScreen(teamId: teamId);
+          return TeamShellScreen(teamId: teamId);
         },
         routes: [
+          // ─── Team Management ───
           GoRoute(
             path: 'members',
             builder: (context, state) {
@@ -100,16 +108,20 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'members/:memberId/positions',
             builder: (context, state) {
               final teamId = int.parse(state.pathParameters['teamId']!);
-              final memberId = int.parse(state.pathParameters['memberId']!);
-              return MemberPositionsScreen(teamId: teamId, memberId: memberId);
+              final memberId =
+                  int.parse(state.pathParameters['memberId']!);
+              return MemberPositionsScreen(
+                  teamId: teamId, memberId: memberId);
             },
           ),
           GoRoute(
             path: 'members/:memberId/blockouts',
             builder: (context, state) {
               final teamId = int.parse(state.pathParameters['teamId']!);
-              final memberId = int.parse(state.pathParameters['memberId']!);
-              return BlockoutFormScreen(teamId: teamId, memberId: memberId);
+              final memberId =
+                  int.parse(state.pathParameters['memberId']!);
+              return BlockoutFormScreen(
+                  teamId: teamId, memberId: memberId);
             },
           ),
           GoRoute(
@@ -133,7 +145,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               return ScheduleMatrixScreen(teamId: teamId);
             },
           ),
-          // Song routes
+          // ─── Song routes ───
           GoRoute(
             path: 'songs',
             builder: (context, state) {
@@ -176,7 +188,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) {
               final teamId = int.parse(state.pathParameters['teamId']!);
               final songId = int.parse(state.pathParameters['songId']!);
-              return SongSectionEditorScreen(teamId: teamId, songId: songId);
+              return SongSectionEditorScreen(
+                  teamId: teamId, songId: songId);
             },
           ),
           GoRoute(
@@ -200,7 +213,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   arrangementId: arrangementId);
             },
           ),
-          // Setlist routes
+          // ─── Setlist routes ───
           GoRoute(
             path: 'setlists',
             builder: (context, state) {
@@ -226,47 +239,143 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'setlists/:setlistId',
             builder: (context, state) {
               final teamId = int.parse(state.pathParameters['teamId']!);
-              final setlistId = int.parse(state.pathParameters['setlistId']!);
-              return SetlistDetailScreen(teamId: teamId, setlistId: setlistId);
+              final setlistId =
+                  int.parse(state.pathParameters['setlistId']!);
+              return SetlistDetailScreen(
+                  teamId: teamId, setlistId: setlistId);
             },
           ),
           GoRoute(
             path: 'setlists/:setlistId/edit',
             builder: (context, state) {
               final teamId = int.parse(state.pathParameters['teamId']!);
-              final setlistId = int.parse(state.pathParameters['setlistId']!);
-              return SetlistFormScreen(teamId: teamId, setlistId: setlistId);
+              final setlistId =
+                  int.parse(state.pathParameters['setlistId']!);
+              return SetlistFormScreen(
+                  teamId: teamId, setlistId: setlistId);
             },
           ),
           GoRoute(
             path: 'setlists/:setlistId/notes',
             builder: (context, state) {
               final teamId = int.parse(state.pathParameters['teamId']!);
-              final setlistId = int.parse(state.pathParameters['setlistId']!);
-              return SetlistNotesScreen(teamId: teamId, setlistId: setlistId);
+              final setlistId =
+                  int.parse(state.pathParameters['setlistId']!);
+              return SetlistNotesScreen(
+                  teamId: teamId, setlistId: setlistId);
             },
           ),
           GoRoute(
             path: 'setlists/:setlistId/schedule',
             builder: (context, state) {
               final teamId = int.parse(state.pathParameters['teamId']!);
-              final setlistId = int.parse(state.pathParameters['setlistId']!);
-              return ScheduleBoardScreen(teamId: teamId, setlistId: setlistId);
+              final setlistId =
+                  int.parse(state.pathParameters['setlistId']!);
+              return ScheduleBoardScreen(
+                  teamId: teamId, setlistId: setlistId);
             },
           ),
           GoRoute(
             path: 'setlists/:setlistId/schedule/assign',
             builder: (context, state) {
               final teamId = int.parse(state.pathParameters['teamId']!);
-              final setlistId = int.parse(state.pathParameters['setlistId']!);
-              return ScheduleAssignScreen(teamId: teamId, setlistId: setlistId);
+              final setlistId =
+                  int.parse(state.pathParameters['setlistId']!);
+              return ScheduleAssignScreen(
+                  teamId: teamId, setlistId: setlistId);
+            },
+          ),
+          // ─── Conti routes ───
+          GoRoute(
+            path: 'contis',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              return ContiListScreen(teamId: teamId);
+            },
+          ),
+          GoRoute(
+            path: 'contis/create',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              return ContiFormScreen(teamId: teamId);
+            },
+          ),
+          GoRoute(
+            path: 'contis/:contiId',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final contiId = int.parse(state.pathParameters['contiId']!);
+              return ContiDetailScreen(teamId: teamId, contiId: contiId);
+            },
+          ),
+          GoRoute(
+            path: 'contis/:contiId/edit',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final contiId = int.parse(state.pathParameters['contiId']!);
+              return ContiFormScreen(teamId: teamId, contiId: contiId);
+            },
+          ),
+          GoRoute(
+            path: 'contis/:contiId/notes',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final contiId = int.parse(state.pathParameters['contiId']!);
+              return SetlistNotesScreen(teamId: teamId, setlistId: contiId);
+            },
+          ),
+          // ─── Cue Sheet routes ───
+          GoRoute(
+            path: 'cuesheets',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              return CueSheetListScreen(teamId: teamId);
+            },
+          ),
+          GoRoute(
+            path: 'cuesheets/create',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              return CueSheetFormScreen(teamId: teamId);
+            },
+          ),
+          GoRoute(
+            path: 'cuesheets/:cueSheetId',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final cueSheetId = int.parse(state.pathParameters['cueSheetId']!);
+              return CueSheetDetailScreen(teamId: teamId, cueSheetId: cueSheetId);
+            },
+          ),
+          GoRoute(
+            path: 'cuesheets/:cueSheetId/edit',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final cueSheetId = int.parse(state.pathParameters['cueSheetId']!);
+              return CueSheetFormScreen(teamId: teamId, cueSheetId: cueSheetId);
+            },
+          ),
+          GoRoute(
+            path: 'cuesheets/:cueSheetId/schedule',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final cueSheetId = int.parse(state.pathParameters['cueSheetId']!);
+              return ScheduleBoardScreen(teamId: teamId, setlistId: cueSheetId);
+            },
+          ),
+          GoRoute(
+            path: 'cuesheets/:cueSheetId/schedule/assign',
+            builder: (context, state) {
+              final teamId = int.parse(state.pathParameters['teamId']!);
+              final cueSheetId = int.parse(state.pathParameters['cueSheetId']!);
+              return ScheduleAssignScreen(teamId: teamId, setlistId: cueSheetId);
             },
           ),
         ],
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
-      body: Center(child: Text('페이지를 찾을 수 없습니다: ${state.error}')),
+      body: Center(child: Text('페이지를 찾을 수 없어요: ${state.error}')),
     ),
   );
 });

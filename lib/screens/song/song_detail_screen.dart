@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:conti_app/providers/providers.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:conti_app/models/song.dart';
 import '../../core/constants/app_spacing.dart';
 import '../../core/constants/app_theme.dart';
+import '../../widgets/animated/conti_fade_in.dart';
 import '../../widgets/conti_card.dart';
 import '../../widgets/conti_error_state.dart';
 import '../../widgets/conti_skeleton.dart';
@@ -31,7 +31,7 @@ class _SongDetailScreenState extends ConsumerState<SongDetailScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -68,7 +68,6 @@ class _SongDetailScreenState extends ConsumerState<SongDetailScreen>
             Tab(text: '정보'),
             Tab(text: '곡 구조'),
             Tab(text: '편곡'),
-            Tab(text: '통계'),
           ],
         ),
       ),
@@ -83,22 +82,23 @@ class _SongDetailScreenState extends ConsumerState<SongDetailScreen>
         ),
         data: (song) {
           if (song == null) {
-            return const Center(child: Text('곡을 찾을 수 없습니다'));
+            return const Center(child: Text('곡을 찾을 수 없어요'));
           }
-          return TabBarView(
-            controller: _tabController,
-            children: [
-              _InfoTab(song: song, teamId: widget.teamId),
-              SongStructureTab(
-                sections: song.sections,
-                originalKey: song.originalKey,
-                onEdit: () => context.push(
-                  '/teams/${widget.teamId}/songs/${widget.songId}/structure/edit',
+          return ContiFadeIn(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _InfoTab(song: song, teamId: widget.teamId),
+                SongStructureTab(
+                  sections: song.sections,
+                  originalKey: song.originalKey,
+                  onEdit: () => context.push(
+                    '/teams/${widget.teamId}/songs/${widget.songId}/structure/edit',
+                  ),
                 ),
-              ),
-              _ArrangementsTab(song: song, teamId: widget.teamId),
-              _StatsTab(teamId: widget.teamId, songId: widget.songId),
-            ],
+                _ArrangementsTab(song: song, teamId: widget.teamId),
+              ],
+            ),
           );
         },
       ),
@@ -139,7 +139,7 @@ class _SongDetailScreenState extends ConsumerState<SongDetailScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('찬양 삭제'),
-        content: const Text('이 찬양을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.'),
+        content: const Text('이 찬양을 삭제할까요? 삭제하면 되돌릴 수 없어요.'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
@@ -161,7 +161,7 @@ class _SongDetailScreenState extends ConsumerState<SongDetailScreen>
           context.pop();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(response.error?.message ?? '삭제에 실패했습니다')),
+            SnackBar(content: Text(response.error?.message ?? '삭제하지 못했어요')),
           );
         }
       }
@@ -181,7 +181,7 @@ class _InfoTab extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('파일 삭제'),
-        content: const Text('이 파일을 삭제하시겠습니까?'),
+        content: const Text('이 파일을 삭제할까요?'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
@@ -206,7 +206,7 @@ class _InfoTab extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content:
-                  Text(response.error?.message ?? '삭제에 실패했습니다')),
+                  Text(response.error?.message ?? '삭제하지 못했어요')),
         );
       }
     }
@@ -218,7 +218,7 @@ class _InfoTab extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('악보 파일 URL 추가'),
+        title: const Text('악보 URL 추가하기'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -227,7 +227,7 @@ class _InfoTab extends ConsumerWidget {
               decoration: const InputDecoration(
                   labelText: '파일 이름 *', hintText: '예: 코드 악보'),
             ),
-            const SizedBox(height: 12),
+            AppSpacing.gapMd,
             TextField(
               controller: urlCtrl,
               decoration: const InputDecoration(
@@ -263,7 +263,7 @@ class _InfoTab extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content:
-                  Text(response.error?.message ?? '추가에 실패했습니다')),
+                  Text(response.error?.message ?? '추가하지 못했어요')),
         );
       }
     }
@@ -282,7 +282,7 @@ class _InfoTab extends ConsumerWidget {
           style: theme.textTheme.headlineMedium,
         ),
         if (song.artist != null) ...[
-          const SizedBox(height: 4),
+          AppSpacing.gapXs,
           Text(
             song.artist!,
             style: theme.textTheme.bodyLarge?.copyWith(
@@ -295,15 +295,15 @@ class _InfoTab extends ConsumerWidget {
         // Tags
         if (song.tags.isNotEmpty) ...[
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
             children: song.tags
                 .map<Widget>((tag) => Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color:
-                            theme.colorScheme.primary.withValues(alpha: 0.1),
+                            AppColors.primaryLight,
                         borderRadius: AppRadius.borderSm,
                       ),
                       child: Text(
@@ -361,7 +361,7 @@ class _InfoTab extends ConsumerWidget {
             icon: Icons.play_circle_filled_rounded,
             iconColor: Colors.red,
             title: 'YouTube',
-            subtitle: '유튜브에서 보기',
+            subtitle: '유튜브에서 들어보기',
             onTap: () => _openUrl(song.youtubeUrl!),
           ),
           AppSpacing.gapSm,
@@ -369,7 +369,7 @@ class _InfoTab extends ConsumerWidget {
         if (song.musicUrl != null && song.musicUrl!.isNotEmpty) ...[
           _LinkCard(
             icon: Icons.audiotrack_rounded,
-            iconColor: AppTheme.secondaryColor,
+            iconColor: AppColors.teal,
             title: '음원 링크',
             subtitle: '음원 재생하기',
             onTap: () => _openUrl(song.musicUrl!),
@@ -407,7 +407,7 @@ class _InfoTab extends ConsumerWidget {
         AppSpacing.gapSm,
         if (song.files.isEmpty)
           Text(
-            '등록된 파일이 없습니다',
+            '등록된 파일이 없어요',
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -416,20 +416,19 @@ class _InfoTab extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
               child: _LinkCard(
                 icon: Icons.insert_drive_file_rounded,
-                iconColor: AppTheme.tertiaryColor,
+                iconColor: AppColors.pink,
                 title: file.fileName,
                 subtitle: file.fileType ?? '파일',
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.download_rounded, size: 20),
-                    const SizedBox(width: 4),
+                    AppSpacing.hGapXs,
                     GestureDetector(
                       onTap: () => _deleteFile(context, ref, file.id),
                       child: Icon(Icons.close_rounded,
                           size: 18,
-                          color: theme.colorScheme.error
-                              .withValues(alpha: 0.7)),
+                          color: AppColors.error),
                     ),
                   ],
                 ),
@@ -475,7 +474,7 @@ class _UsageHistorySection extends ConsumerWidget {
         child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
       ),
       error: (_, _) => Text(
-        '사용 이력을 불러올 수 없습니다',
+        '사용 이력을 불러올 수 없어요',
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.error,
         ),
@@ -483,7 +482,7 @@ class _UsageHistorySection extends ConsumerWidget {
       data: (usages) {
         if (usages.isEmpty) {
           return Text(
-            '아직 사용된 콘티가 없습니다',
+            '아직 사용된 콘티가 없어요',
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -517,14 +516,13 @@ class _UsageHistorySection extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.tertiary
-                              .withValues(alpha: 0.12),
+                          color: AppColors.teal.withValues(alpha: 0.12),
                           borderRadius: AppRadius.borderSm,
                         ),
                         child: Text(
                           usage.usedKey!,
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.tertiary,
+                            color: AppColors.teal,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -566,7 +564,7 @@ class _InfoItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 20, color: theme.colorScheme.primary),
-        const SizedBox(height: 4),
+        AppSpacing.gapXs,
         Text(
           value,
           style: theme.textTheme.titleSmall?.copyWith(
@@ -605,7 +603,7 @@ class _LinkCard extends StatelessWidget {
     return ContiCard(
       onTap: onTap,
       padding: const EdgeInsets.all(AppSpacing.md),
-      borderRadius: 16,
+      borderRadius: AppRadius.lg,
       child: Row(
         children: [
           Container(
@@ -652,7 +650,7 @@ class _ArrangementsTab extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('편곡 삭제'),
-        content: const Text('이 편곡을 삭제하시겠습니까?'),
+        content: const Text('이 편곡을 삭제할까요?'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
@@ -677,7 +675,7 @@ class _ArrangementsTab extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content:
-                  Text(response.error?.message ?? '삭제에 실패했습니다')),
+                  Text(response.error?.message ?? '삭제하지 못했어요')),
         );
       }
     }
@@ -689,7 +687,7 @@ class _ArrangementsTab extends ConsumerWidget {
     final arrangements = song.arrangements;
 
     if (arrangements.isEmpty) {
-      return const Center(child: Text('편곡 정보가 없습니다.'));
+      return const Center(child: Text('아직 편곡 정보가 없어요'));
     }
 
     return ListView.builder(
@@ -721,14 +719,13 @@ class _ArrangementsTab extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primary
-                              .withValues(alpha: 0.1),
+                          color: AppColors.primaryLight,
                           borderRadius: AppRadius.borderSm,
                         ),
                         child: Text(
                           '기본',
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.primary,
+                            color: AppColors.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -737,7 +734,7 @@ class _ArrangementsTab extends ConsumerWidget {
                       IconButton(
                         icon: Icon(Icons.delete_outline_rounded,
                             size: 20,
-                            color: theme.colorScheme.error.withValues(alpha: 0.7)),
+                            color: AppColors.error),
                         onPressed: () => _deleteArrangement(
                             context, ref, song.id, arr.id),
                         padding: EdgeInsets.zero,
@@ -817,295 +814,3 @@ class _ArrangementChip extends StatelessWidget {
   }
 }
 
-// --- Stats Tab ---
-
-class _StatsTab extends ConsumerWidget {
-  final int teamId;
-  final int songId;
-
-  const _StatsTab({required this.teamId, required this.songId});
-
-  static const _keyColors = [
-    AppTheme.primaryColor,
-    AppTheme.secondaryColor,
-    AppTheme.tertiaryColor,
-    Color(0xFF4CAF50),
-    Color(0xFFFF9800),
-    Color(0xFF00BCD4),
-    Color(0xFF9C27B0),
-    Color(0xFFFF5722),
-  ];
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final statsAsync =
-        ref.watch(songStatsProvider((teamId: teamId, songId: songId)));
-
-    return statsAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => ContiErrorState(
-        onRetry: () => ref
-            .invalidate(songStatsProvider((teamId: teamId, songId: songId))),
-      ),
-      data: (stats) {
-        if (stats == null || stats.totalUsageCount == 0) {
-          return Center(
-            child: Text(
-              '통계 데이터가 없습니다',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          );
-        }
-        return ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          children: [
-            // Summary
-            ContiCard(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _InfoItem(
-                    icon: Icons.repeat_rounded,
-                    label: '총 사용',
-                    value: '${stats.totalUsageCount}회',
-                  ),
-                  if (stats.lastUsedAt != null)
-                    _InfoItem(
-                      icon: Icons.calendar_today_rounded,
-                      label: '마지막 사용',
-                      value: stats.lastUsedAt!,
-                    ),
-                ],
-              ),
-            ),
-
-            // Monthly usage chart
-            if (stats.monthlyUsages.isNotEmpty) ...[
-              AppSpacing.gapXxl,
-              Text('월별 사용 추이', style: theme.textTheme.titleMedium),
-              AppSpacing.gapMd,
-              _MonthlyChart(usages: stats.monthlyUsages),
-            ],
-
-            // Key distribution
-            if (stats.keyDistribution.isNotEmpty) ...[
-              AppSpacing.gapXxl,
-              Text('키 분포', style: theme.textTheme.titleMedium),
-              AppSpacing.gapMd,
-              _KeyPieChart(
-                  keys: stats.keyDistribution, colors: _keyColors),
-            ],
-
-            // Leader breakdown
-            if (stats.leaderBreakdown.isNotEmpty) ...[
-              AppSpacing.gapXxl,
-              Text('리더별 사용', style: theme.textTheme.titleMedium),
-              AppSpacing.gapMd,
-              ...stats.leaderBreakdown.map((leader) => Padding(
-                    padding:
-                        const EdgeInsets.only(bottom: AppSpacing.sm),
-                    child: ContiCard(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
-                          vertical: AppSpacing.sm),
-                      child: Row(
-                        children: [
-                          Icon(Icons.person_rounded,
-                              size: 20,
-                              color: theme.colorScheme.primary),
-                          AppSpacing.hGapMd,
-                          Expanded(
-                            child: Text(leader.leaderName,
-                                style: theme.textTheme.bodyMedium),
-                          ),
-                          Text(
-                            '${leader.count}회',
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )),
-            ],
-
-            AppSpacing.gapHuge,
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _MonthlyChart extends StatelessWidget {
-  final List<MonthlyUsage> usages;
-
-  const _MonthlyChart({required this.usages});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final sorted = List<MonthlyUsage>.from(usages)
-      ..sort((a, b) {
-        final cmp = a.year.compareTo(b.year);
-        return cmp != 0 ? cmp : a.month.compareTo(b.month);
-      });
-    final maxCount = sorted.map((u) => u.count).reduce((a, b) => a > b ? a : b);
-
-    return ContiCard(
-      child: SizedBox(
-        height: 180,
-        child: BarChart(
-          BarChartData(
-            alignment: BarChartAlignment.spaceAround,
-            maxY: maxCount.toDouble() * 1.2,
-            barTouchData: BarTouchData(enabled: false),
-            titlesData: FlTitlesData(
-              show: true,
-              topTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 28,
-                  getTitlesWidget: (value, meta) {
-                    if (value != value.roundToDouble()) {
-                      return const SizedBox.shrink();
-                    }
-                    return Text(
-                      '${value.toInt()}',
-                      style: theme.textTheme.labelSmall,
-                    );
-                  },
-                ),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 24,
-                  getTitlesWidget: (value, meta) {
-                    final idx = value.toInt();
-                    if (idx < 0 || idx >= sorted.length) {
-                      return const SizedBox.shrink();
-                    }
-                    return SideTitleWidget(
-                      meta: meta,
-                      child: Text(
-                        '${sorted[idx].month}월',
-                        style: theme.textTheme.labelSmall,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            borderData: FlBorderData(show: false),
-            gridData: FlGridData(
-              show: true,
-              drawVerticalLine: false,
-              getDrawingHorizontalLine: (_) => FlLine(
-                color: theme.colorScheme.outline.withValues(alpha: 0.08),
-                strokeWidth: 1,
-              ),
-            ),
-            barGroups: sorted.asMap().entries.map((entry) {
-              return BarChartGroupData(
-                x: entry.key,
-                barRods: [
-                  BarChartRodData(
-                    toY: entry.value.count.toDouble(),
-                    width: 16,
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(4)),
-                    gradient: AppTheme.primaryGradient,
-                  ),
-                ],
-              );
-            }).toList(),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _KeyPieChart extends StatelessWidget {
-  final List<KeyUsage> keys;
-  final List<Color> colors;
-
-  const _KeyPieChart({required this.keys, required this.colors});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final total = keys.fold<int>(0, (sum, k) => sum + k.count);
-
-    return ContiCard(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 160,
-            child: PieChart(
-              PieChartData(
-                sectionsSpace: 2,
-                centerSpaceRadius: 32,
-                sections: keys.asMap().entries.map((entry) {
-                  final i = entry.key;
-                  final k = entry.value;
-                  final pct = total > 0 ? (k.count / total * 100) : 0.0;
-                  return PieChartSectionData(
-                    value: k.count.toDouble(),
-                    title: pct >= 10 ? '${pct.round()}%' : '',
-                    titleStyle: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                    color: colors[i % colors.length],
-                    radius: 44,
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-          AppSpacing.gapMd,
-          Wrap(
-            spacing: AppSpacing.md,
-            runSpacing: AppSpacing.sm,
-            alignment: WrapAlignment.center,
-            children: keys.asMap().entries.map((entry) {
-              final i = entry.key;
-              final k = entry.value;
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: colors[i % colors.length],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${k.key} (${k.count})',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-}

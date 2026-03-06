@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:conti_app/core/constants/app_constants.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/user.dart';
+import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -43,11 +45,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       });
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('프로필이 수정되었습니다')),
+          const SnackBar(content: Text('프로필이 수정되었어요')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('프로필 수정에 실패했습니다')),
+          const SnackBar(content: Text('프로필 수정에 실패했어요')),
         );
       }
     }
@@ -58,10 +60,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('로그아웃'),
-        content: const Text('정말 로그아웃하시겠습니까?'),
+        content: const Text('정말 로그아웃할까요?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('취소')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('로그아웃')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('로그아웃'),
+          ),
         ],
       ),
     );
@@ -83,7 +89,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         actions: [
           if (!_isEditing)
             IconButton(
-              icon: const Icon(Icons.edit),
+              icon: const Icon(Icons.edit_outlined),
               onPressed: () => setState(() => _isEditing = true),
             ),
         ],
@@ -91,12 +97,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       body: user == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.all(24),
+              padding: AppPadding.paddingForm,
               children: [
                 Center(
                   child: CircleAvatar(
                     radius: 48,
-                    backgroundColor: theme.colorScheme.primaryContainer,
+                    backgroundColor: AppColors.primaryLight,
                     backgroundImage: user.profileImage != null
                         ? NetworkImage(user.profileImage!)
                         : null,
@@ -104,19 +110,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ? Text(
                             user.name.isNotEmpty ? user.name[0] : '?',
                             style: theme.textTheme.headlineLarge?.copyWith(
-                              color: theme.colorScheme.onPrimaryContainer,
+                              color: AppColors.primary,
                             ),
                           )
                         : null,
                   ),
                 ),
-                const SizedBox(height: 24),
+                AppSpacing.gapXxl,
                 if (_isEditing) ...[
                   TextField(
                     controller: _nameController,
                     decoration: const InputDecoration(labelText: '이름'),
                   ),
-                  const SizedBox(height: 16),
+                  AppSpacing.gapLg,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -127,7 +133,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         },
                         child: const Text('취소'),
                       ),
-                      const SizedBox(width: 8),
+                      AppSpacing.hGapSm,
                       FilledButton(
                         onPressed: _isSaving ? null : _save,
                         child: _isSaving
@@ -144,17 +150,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   Center(
                     child: Text(user.name, style: theme.textTheme.headlineSmall),
                   ),
-                  const SizedBox(height: 4),
+                  AppSpacing.gapXs,
                   Center(
                     child: Text(
                       user.email,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                        color: AppColors.gray500,
                       ),
                     ),
                   ),
                 ],
-                const SizedBox(height: 32),
+                AppSpacing.gapXxxl,
                 // Dark mode setting
                 Card(
                   child: Padding(
@@ -167,7 +173,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           child: Text('화면 설정', style: theme.textTheme.titleSmall),
                         ),
                         _ThemeModeOption(
-                          title: '시스템 설정',
+                          title: '시스템 설정에 맞추기',
                           icon: Icons.settings_brightness_rounded,
                           isSelected: themeMode == ThemeMode.system,
                           onTap: () => ref
@@ -194,7 +200,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                AppSpacing.gapLg,
                 // Calendar subscribe
                 Card(
                   child: Padding(
@@ -202,16 +208,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Calendar Subscribe',
+                        Text('캘린더 구독',
                             style: theme.textTheme.titleSmall),
-                        const SizedBox(height: 8),
+                        AppSpacing.gapSm,
                         Text(
-                          'Copy the iCal URL to subscribe to your schedule in Google Calendar, Apple Calendar, etc.',
+                          'iCal URL을 복사해서 Google 캘린더, Apple 캘린더 등에 구독할 수 있어요.',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                            color: AppColors.gray500,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        AppSpacing.gapMd,
                         Consumer(builder: (context, ref, _) {
                           final tokenAsync =
                               ref.watch(calendarTokenProvider);
@@ -222,11 +228,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   child: CircularProgressIndicator(
                                       strokeWidth: 2)),
                             ),
-                            error: (e, _) => Text('Error: $e',
+                            error: (e, _) => Text('오류: $e',
                                 style: theme.textTheme.bodySmall),
                             data: (token) {
                               if (token == null) {
-                                return const Text('Failed to get token');
+                                return Text('토큰을 가져올 수 없어요',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: AppColors.gray500,
+                                    ));
                               }
                               final url =
                                   '${AppConstants.baseUrl}${AppConstants.apiPrefix}/calendar.ics?token=$token';
@@ -238,13 +247,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                       .showSnackBar(
                                     const SnackBar(
                                         content: Text(
-                                            'Calendar URL copied to clipboard')),
+                                            '캘린더 URL이 복사되었어요')),
                                   );
                                 },
                                 icon: const Icon(
                                     Icons.copy_rounded,
                                     size: 18),
-                                label: const Text('Copy iCal URL'),
+                                label: const Text('iCal URL 복사하기'),
                               );
                             },
                           );
@@ -253,13 +262,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                AppSpacing.gapXxl,
                 OutlinedButton.icon(
                   onPressed: _logout,
                   icon: const Icon(Icons.logout),
                   label: const Text('로그아웃'),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: theme.colorScheme.error,
+                    foregroundColor: AppColors.error,
+                    side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
                   ),
                 ),
               ],
@@ -290,20 +300,20 @@ class _ThemeModeOption extends StatelessWidget {
       leading: Icon(
         icon,
         color: isSelected
-            ? theme.colorScheme.primary
-            : theme.colorScheme.onSurfaceVariant,
+            ? AppColors.primary
+            : AppColors.gray400,
       ),
       title: Text(
         title,
         style: theme.textTheme.bodyMedium?.copyWith(
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
           color: isSelected
-              ? theme.colorScheme.primary
+              ? AppColors.primary
               : theme.colorScheme.onSurface,
         ),
       ),
       trailing: isSelected
-          ? Icon(Icons.check_rounded, color: theme.colorScheme.primary)
+          ? const Icon(Icons.check_rounded, color: AppColors.primary)
           : null,
       onTap: onTap,
     );

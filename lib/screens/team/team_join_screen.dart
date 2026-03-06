@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:conti_app/providers/providers.dart';
+import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
 
 class TeamJoinScreen extends ConsumerStatefulWidget {
   const TeamJoinScreen({super.key});
@@ -34,11 +36,11 @@ class _TeamJoinScreenState extends ConsumerState<TeamJoinScreen> {
         ref.invalidate(userTeamsProvider);
         context.go('/home');
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('팀에 참여했습니다')),
+          const SnackBar(content: Text('팀에 참여했어요!')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.error?.message ?? '팀 참여 실패')),
+          SnackBar(content: Text(response.error?.message ?? '팀 참여에 실패했어요')),
         );
       }
     }
@@ -46,6 +48,8 @@ class _TeamJoinScreenState extends ConsumerState<TeamJoinScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('팀 참여하기')),
       body: Padding(
@@ -54,19 +58,21 @@ class _TeamJoinScreenState extends ConsumerState<TeamJoinScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              '팀 관리자에게 받은 초대 코드를 입력해주세요',
-              style: Theme.of(context).textTheme.bodyLarge,
+              '팀 관리자에게 받은 초대 코드를 입력해 주세요',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: AppColors.gray600,
+              ),
             ),
-            const SizedBox(height: 24),
+            AppSpacing.gapXxl,
             TextField(
               controller: _codeController,
               decoration: const InputDecoration(
                 labelText: '초대 코드',
-                hintText: '초대 코드 입력',
+                hintText: '초대 코드를 입력해 주세요',
               ),
               textCapitalization: TextCapitalization.characters,
             ),
-            const SizedBox(height: 32),
+            AppSpacing.gapXxxl,
             FilledButton(
               onPressed: _isLoading ? null : _join,
               child: _isLoading

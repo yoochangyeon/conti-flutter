@@ -1,10 +1,9 @@
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+import 'package:web/web.dart';
 
-String? readWebStorage(String key) => html.window.localStorage[key];
+String? readWebStorage(String key) => window.localStorage.getItem(key);
 void writeWebStorage(String key, String value) {
-  html.window.localStorage[key] = value;
+  window.localStorage.setItem(key, value);
 }
 void deleteWebStorage(String key) {
-  html.window.localStorage.remove(key);
+  window.localStorage.removeItem(key);
 }

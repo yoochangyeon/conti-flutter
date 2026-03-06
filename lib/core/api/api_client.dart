@@ -7,6 +7,12 @@ class ApiClient {
   late final Dio _dio;
   final SecureStorage _storage;
 
+  /// A plain Dio instance (without auth interceptors) used for token refresh
+  /// and dev login. Created once and reused to avoid unnecessary allocations.
+  static final Dio _plainDio = Dio(BaseOptions(
+    baseUrl: '${AppConstants.baseUrl}${AppConstants.apiPrefix}',
+  ));
+
   ApiClient({required SecureStorage storage}) : _storage = storage {
     _dio = Dio(
       BaseOptions(
@@ -45,11 +51,7 @@ class ApiClient {
       final refreshToken = await _storage.getRefreshToken();
       if (refreshToken == null) return false;
 
-      final dio = Dio(BaseOptions(
-        baseUrl: '${AppConstants.baseUrl}${AppConstants.apiPrefix}',
-      ));
-
-      final response = await dio.post(
+      final response = await _plainDio.post(
         '/auth/refresh',
         data: {'refreshToken': refreshToken},
       );
@@ -176,8 +178,7 @@ class ApiClient {
   // Dev login (for testing without OAuth)
   Future<ApiResponse<Map<String, dynamic>>> devLogin() async {
     try {
-      final dio = Dio(BaseOptions(baseUrl: '${AppConstants.baseUrl}${AppConstants.apiPrefix}'));
-      final response = await dio.post('/dev/test-login');
+      final response = await _plainDio.post('/dev/test-login');
       return ApiResponse.fromJson(
         response.data,
         (data) => data as Map<String, dynamic>,

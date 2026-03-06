@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/schedule.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
 import '../../widgets/conti_gradient_button.dart';
 
 class MemberPositionsScreen extends ConsumerStatefulWidget {
@@ -74,14 +75,16 @@ class _MemberPositionsScreenState
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.lg),
               children: [
-                Text('포지션을 선택하세요', style: theme.textTheme.titleSmall),
+                Text('포지션을 선택해 주세요', style: theme.textTheme.titleSmall),
                 AppSpacing.gapSm,
-                Text('주 포지션은 길게 눌러 설정할 수 있습니다',
-                    style: theme.textTheme.bodySmall),
+                Text('주 포지션은 길게 눌러서 설정할 수 있어요',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.gray500,
+                    )),
                 AppSpacing.gapLg,
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
                   children: MemberPosition.values.map((pos) {
                     final isSelected = _selectedPositions.contains(pos);
                     final isPrimary = _primaryPosition == pos;
@@ -96,9 +99,9 @@ class _MemberPositionsScreenState
                           children: [
                             Text(pos.displayName),
                             if (isPrimary) ...[
-                              const SizedBox(width: 4),
+                              AppSpacing.hGapXs,
                               Icon(Icons.star_rounded,
-                                  size: 14, color: Colors.amber.shade600),
+                                  size: 14, color: AppColors.warning),
                             ],
                           ],
                         ),
@@ -121,9 +124,8 @@ class _MemberPositionsScreenState
                             }
                           });
                         },
-                        selectedColor: theme.colorScheme.primary
-                            .withValues(alpha: 0.2),
-                        checkmarkColor: theme.colorScheme.primary,
+                        selectedColor: AppColors.primaryLight,
+                        checkmarkColor: AppColors.primary,
                       ),
                     );
                   }).toList(),
@@ -133,11 +135,13 @@ class _MemberPositionsScreenState
                   Row(
                     children: [
                       Icon(Icons.star_rounded,
-                          size: 16, color: Colors.amber.shade600),
+                          size: 16, color: AppColors.warning),
                       AppSpacing.hGapXs,
                       Text(
                         '주 포지션: ${_primaryPosition!.displayName}',
-                        style: theme.textTheme.labelMedium,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: AppColors.gray600,
+                        ),
                       ),
                     ],
                   ),
@@ -150,7 +154,7 @@ class _MemberPositionsScreenState
             child: SizedBox(
               width: double.infinity,
               child: ContiGradientButton(
-                label: '저장',
+                label: '저장하기',
                 isLoading: _isSaving,
                 onPressed: _isSaving ? null : _save,
               ),
@@ -182,13 +186,13 @@ class _MemberPositionsScreenState
         ref.invalidate(teamMembersProvider(widget.teamId));
         context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('포지션이 저장되었습니다')),
+          const SnackBar(content: Text('포지션이 저장되었어요')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content:
-                  Text(response.error?.message ?? '저장에 실패했습니다')),
+                  Text(response.error?.message ?? '저장에 실패했어요')),
         );
       }
     }

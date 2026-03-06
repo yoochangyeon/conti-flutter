@@ -1,5 +1,7 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../core/constants/app_shadows.dart';
+import '../core/constants/app_theme.dart';
+import 'animated/conti_scale_tap.dart';
 
 class ContiCard extends StatelessWidget {
   final Widget child;
@@ -8,7 +10,7 @@ class ContiCard extends StatelessWidget {
   final VoidCallback? onTap;
   final LinearGradient? borderGradient;
   final double borderRadius;
-  final double blur;
+  final double blur; // kept for API compat, no longer used
 
   const ContiCard({
     super.key,
@@ -17,37 +19,25 @@ class ContiCard extends StatelessWidget {
     this.margin,
     this.onTap,
     this.borderGradient,
-    this.borderRadius = 20,
-    this.blur = 10,
+    this.borderRadius = 16,
+    this.blur = 0,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    Widget card = ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: Container(
-          padding: padding ?? const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.06)
-                : Colors.white.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(borderRadius),
-            border: borderGradient != null
-                ? null
-                : Border.all(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.08)
-                        : Colors.black.withValues(alpha: 0.05),
-                  ),
-          ),
-          child: child,
-        ),
+    Widget card = Container(
+      padding: padding ?? const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : AppColors.white,
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: isDark
+            ? Border.all(color: AppColors.darkDivider, width: 0.5)
+            : null,
+        boxShadow: AppShadow.card(isDark),
       ),
+      child: child,
     );
 
     if (borderGradient != null) {
@@ -56,17 +46,20 @@ class ContiCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(borderRadius),
           gradient: borderGradient,
         ),
-        padding: const EdgeInsets.all(1),
-        child: card,
+        padding: const EdgeInsets.all(1.5),
+        child: Container(
+          padding: padding ?? const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkSurface : AppColors.white,
+            borderRadius: BorderRadius.circular(borderRadius - 1.5),
+          ),
+          child: child,
+        ),
       );
     }
 
     if (onTap != null) {
-      card = InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: card,
-      );
+      card = ContiScaleTap(onTap: onTap, child: card);
     }
 
     if (margin != null) {

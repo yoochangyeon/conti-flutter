@@ -1,0 +1,80 @@
+{
+  "title": "UI/UX Token Migration - Slices 4-5 + Leftover Cleanup",
+  "description": "Complete Toss-style design token migration for all remaining Flutter screens. Replace raw SizedBox, BorderRadius.circular, and spacing values with AppSpacing/AppRadius/AppPadding tokens.",
+  "stories": [
+    {
+      "id": "US-001",
+      "title": "Slice 4A: CueSheet List + Form screens token migration",
+      "priority": 1,
+      "passes": true,
+      "acceptanceCriteria": [
+        "cuesheet_list_screen.dart has zero SizedBox(height:N), SizedBox(width:N), BorderRadius.circular(N), spacing:N raw values",
+        "cuesheet_form_screen.dart has zero SizedBox(height:N), BorderRadius.circular(N), spacing:N raw values and imports app_spacing.dart",
+        "flutter analyze shows no new errors in cuesheet_list_screen.dart and cuesheet_form_screen.dart"
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "Slice 4B: CueSheet Detail screen token migration",
+      "priority": 1,
+      "passes": true,
+      "acceptanceCriteria": [
+        "cuesheet_detail_screen.dart has zero SizedBox(height:N), SizedBox(width:N), BorderRadius.circular(N) raw values",
+        "flutter analyze shows no new errors in cuesheet_detail_screen.dart"
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "Slice 4C: Schedule screens token migration",
+      "priority": 1,
+      "passes": true,
+      "acceptanceCriteria": [
+        "schedule_board_screen.dart has zero SizedBox(height:N), BorderRadius.circular(N) raw values",
+        "my_schedule_screen.dart has zero BorderRadius.circular(N) raw values",
+        "schedule_matrix_screen.dart has zero BorderRadius.circular(N) raw values",
+        "schedule_assign_screen.dart has zero spacing:N raw values",
+        "flutter analyze shows no new errors in all 4 schedule screen files"
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "Slice 5A: Profile + Home + Notification screens token migration",
+      "priority": 2,
+      "passes": true,
+      "acceptanceCriteria": [
+        "profile_screen.dart has zero SizedBox(height:N), SizedBox(width:N) raw values",
+        "home_screen.dart has zero SizedBox(height:N), BorderRadius.circular(N) raw values",
+        "notification_list_screen.dart has zero SizedBox(height:N) raw values",
+        "flutter analyze shows no new errors in these 3 files"
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "Slice 5B: Team screens leftover cleanup",
+      "priority": 2,
+      "passes": true,
+      "acceptanceCriteria": [
+        "team_join_screen.dart has zero SizedBox(height:N), SizedBox(width:N) raw values",
+        "team_create_screen.dart has zero SizedBox(height:N), SizedBox(width:N) raw values",
+        "team_members_screen.dart has zero SizedBox(height:N), BorderRadius.circular(N), spacing:N raw values",
+        "team_more_tab.dart has zero standard-token BorderRadius.circular(N) raw values (BorderRadius.circular(10) is non-standard, kept as-is)",
+        "team_notices_screen.dart has zero SizedBox(height:N) raw values",
+        "flutter analyze shows no new errors in these 5 files"
+      ]
+    },
+    {
+      "id": "US-006",
+      "title": "Slice 5C: Song/Setlist/Widget leftover cleanup",
+      "priority": 2,
+      "passes": true,
+      "acceptanceCriteria": [
+        "song_form_screen.dart has zero SizedBox(width:N), spacing:N raw values (spacing:6 is non-standard, kept as-is)",
+        "song_detail_screen.dart has zero spacing:N raw values",
+        "setlist_form_screen.dart has zero SizedBox(width:N) raw values",
+        "member_positions_screen.dart has zero SizedBox(width:N), spacing:N raw values",
+        "conti_gradient_button.dart has zero SizedBox(width:N) raw values",
+        "flutter analyze shows no new errors in these 5 files"
+      ]
+    }
+  ]
+}

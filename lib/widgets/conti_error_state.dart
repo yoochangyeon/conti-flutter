@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/constants/app_spacing.dart';
+import '../core/constants/app_theme.dart';
 
 class ContiErrorState extends StatelessWidget {
   final String? message;
@@ -13,7 +14,7 @@ class ContiErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Center(
       child: Padding(
@@ -22,33 +23,41 @@ class ContiErrorState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 72,
+              height: 72,
               decoration: BoxDecoration(
-                color: theme.colorScheme.error.withValues(alpha: 0.1),
+                color: AppColors.errorLight,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.cloud_off_rounded,
-                size: 36,
-                color: theme.colorScheme.error.withValues(alpha: 0.6),
+              child: const Icon(
+                Icons.wifi_off_rounded,
+                size: 32,
+                color: AppColors.error,
               ),
             ),
             AppSpacing.gapXl,
             Text(
-              message ?? '데이터를 불러오지 못했습니다',
-              style: theme.textTheme.titleMedium,
+              message ?? '일시적인 오류가 발생했어요',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: isDark ? AppColors.gray200 : AppColors.gray800,
+              ),
               textAlign: TextAlign.center,
             ),
             AppSpacing.gapSm,
-            Text(
-              '네트워크 연결을 확인하고 다시 시도해주세요',
-              style: theme.textTheme.bodySmall,
+            const Text(
+              '잠시 후 다시 시도해 주세요',
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.gray500,
+                height: 1.5,
+              ),
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[
-              AppSpacing.gapXl,
-              FilledButton.icon(
+              AppSpacing.gapXxl,
+              OutlinedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh_rounded, size: 18),
                 label: const Text('다시 시도'),

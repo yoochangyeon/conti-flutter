@@ -116,8 +116,8 @@ class SectionFlowCard extends StatelessWidget {
           // Card content
           Expanded(
             child: Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(bottom: AppSpacing.md),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               decoration: BoxDecoration(
                 color: isDark
                     ? typeColor.withValues(alpha: 0.08)

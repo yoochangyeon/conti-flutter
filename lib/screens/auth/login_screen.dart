@@ -3,6 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:conti_app/providers/providers.dart';
 import '../../core/constants/app_spacing.dart';
 import '../../core/constants/app_theme.dart';
+import '../../widgets/animated/conti_scale_tap.dart';
+import '../../widgets/animated/conti_fade_in.dart';
+
+const _kakaoYellow = Color(0xFFFEE500);
+const _kakaoText = Color(0xFF3A1D1D);
 
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -22,13 +27,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (!success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content: Text('로그인 실패. 백엔드 서버가 실행 중인지 확인하세요.')),
+              content: Text('로그인에 실패했어요. 백엔드 서버가 실행 중인지 확인해 주세요.')),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('로그인 오류: $e')),
+          SnackBar(content: Text('로그인 중 오류가 발생했어요: $e')),
         );
       }
     } finally {
@@ -41,6 +46,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxxl),
@@ -49,77 +55,82 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             children: [
               const Spacer(flex: 2),
 
-              // Logo with gradient
-              Container(
-                width: 96,
-                height: 96,
-                decoration: BoxDecoration(
-                  gradient: AppTheme.primaryGradient,
-                  borderRadius: AppRadius.borderXl,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
+              // Logo with solid primary color
+              ContiFadeIn(
+                child: Column(
+                  children: [
+                    Container(
+                      width: 96,
+                      height: 96,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: AppRadius.borderXl,
+                      ),
+                      child: const Icon(
+                        Icons.music_note_rounded,
+                        size: 48,
+                        color: AppColors.white,
+                      ),
+                    ),
+                    AppSpacing.gapXxl,
+                    Text(
+                      'Conti',
+                      style: theme.textTheme.displayMedium?.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    AppSpacing.gapSm,
+                    Text(
+                      '예배팀을 위한 콘티 관리 플랫폼',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: AppColors.gray600,
+                      ),
                     ),
                   ],
-                ),
-                child: const Icon(
-                  Icons.music_note_rounded,
-                  size: 48,
-                  color: Colors.white,
-                ),
-              ),
-              AppSpacing.gapXxl,
-
-              // App name
-              ShaderMask(
-                shaderCallback: (bounds) =>
-                    AppTheme.primaryGradient.createShader(bounds),
-                child: Text(
-                  'Conti',
-                  style: theme.textTheme.displayMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              AppSpacing.gapSm,
-              Text(
-                '예배팀을 위한 콘티 관리 플랫폼',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
 
               const Spacer(flex: 2),
 
               // Kakao Login
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton.icon(
-                  onPressed: _isLoading ? null : () {},
-                  icon: const Icon(Icons.chat_bubble_rounded),
-                  label: const Text('카카오로 시작하기'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFEE500),
-                    foregroundColor: const Color(0xFF191919),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
+              ContiFadeIn(
+                delay: const Duration(milliseconds: 100),
+                child: ContiScaleTap(
+                  onTap: _isLoading ? null : () {},
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton.icon(
+                      onPressed: _isLoading ? null : () {},
+                      icon: const Icon(Icons.chat_bubble_rounded),
+                      label: const Text('카카오로 시작하기'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _kakaoYellow,
+                        foregroundColor: _kakaoText,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: AppRadius.borderLg),
+                      ),
+                    ),
                   ),
                 ),
               ),
               AppSpacing.gapMd,
 
               // Google Login
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: OutlinedButton.icon(
-                  onPressed: _isLoading ? null : () {},
-                  icon: const Icon(Icons.g_mobiledata_rounded),
-                  label: const Text('Google로 시작하기'),
+              ContiFadeIn(
+                delay: const Duration(milliseconds: 150),
+                child: ContiScaleTap(
+                  onTap: _isLoading ? null : () {},
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: OutlinedButton.icon(
+                      onPressed: _isLoading ? null : () {},
+                      icon: const Icon(Icons.g_mobiledata_rounded),
+                      label: const Text('Google로 시작하기'),
+                    ),
+                  ),
                 ),
               ),
               AppSpacing.gapXxl,
@@ -136,7 +147,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   onPressed: _devLogin,
                   child: Text(
                     '개발자 로그인',
-                    style: TextStyle(color: theme.colorScheme.outline),
+                    style: TextStyle(color: AppColors.gray400),
                   ),
                 ),
 

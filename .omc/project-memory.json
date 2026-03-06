@@ -1,0 +1,466 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1772771937570,
+  "projectRoot": "/Users/chang-yeon/Repository/conti/conti-flutter",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "lib",
+      "scripts",
+      "test"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "android": {
+      "path": "android",
+      "purpose": null,
+      "fileCount": 8,
+      "lastAccessed": 1772771937557,
+      "keyFiles": [
+        "build.gradle.kts",
+        "conti_app_android.iml",
+        "gradle.properties",
+        "gradlew",
+        "gradlew.bat"
+      ]
+    },
+    "build": {
+      "path": "build",
+      "purpose": "Build output",
+      "fileCount": 3,
+      "lastAccessed": 1772771937557,
+      "keyFiles": [
+        "6c6c28c41445d15d6de537ed04c1e83a.cache.dill.track.dill",
+        "f537d389bd7fe17e116f8b847863fcdd.cache.dill.track.dill",
+        "last_build_run.json"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 2,
+      "lastAccessed": 1772771937558,
+      "keyFiles": [
+        "DESIGN.md",
+        "SESSION_CONTEXT.md"
+      ]
+    },
+    "ios": {
+      "path": "ios",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1772771937558,
+      "keyFiles": []
+    },
+    "lib": {
+      "path": "lib",
+      "purpose": "Library code",
+      "fileCount": 1,
+      "lastAccessed": 1772771937558,
+      "keyFiles": [
+        "main.dart"
+      ]
+    },
+    "macos": {
+      "path": "macos",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1772771937559,
+      "keyFiles": []
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 1,
+      "lastAccessed": 1772771937559,
+      "keyFiles": [
+        "ci_lint_tokens.sh"
+      ]
+    },
+    "test": {
+      "path": "test",
+      "purpose": "Test files",
+      "fileCount": 1,
+      "lastAccessed": 1772771937559,
+      "keyFiles": [
+        "widget_test.dart"
+      ]
+    },
+    "web": {
+      "path": "web",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1772771937559,
+      "keyFiles": [
+        "favicon.png",
+        "index.html",
+        "manifest.json"
+      ]
+    },
+    "android/app": {
+      "path": "android/app",
+      "purpose": "Application code",
+      "fileCount": 1,
+      "lastAccessed": 1772771937560,
+      "keyFiles": [
+        "build.gradle.kts"
+      ]
+    },
+    "android/build": {
+      "path": "android/build",
+      "purpose": "Build output",
+      "fileCount": 0,
+      "lastAccessed": 1772771937560,
+      "keyFiles": []
+    },
+    "lib/models": {
+      "path": "lib/models",
+      "purpose": "Data models",
+      "fileCount": 9,
+      "lastAccessed": 1772771937560,
+      "keyFiles": [
+        "notification.dart",
+        "schedule.dart",
+        "schedule_matrix.dart"
+      ]
+    },
+    "lib/routes": {
+      "path": "lib/routes",
+      "purpose": "Route handlers",
+      "fileCount": 1,
+      "lastAccessed": 1772771937560,
+      "keyFiles": [
+        "router.dart"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "lib/screens/cuesheet/cuesheet_detail_screen.dart",
+      "accessCount": 29,
+      "lastAccessed": 1772786113713,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/song/song_detail_screen.dart",
+      "accessCount": 16,
+      "lastAccessed": 1772786045176,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/setlist/setlist_detail_screen.dart",
+      "accessCount": 14,
+      "lastAccessed": 1772773200810,
+      "type": "file"
+    },
+    {
+      "path": "lib/core/constants/app_spacing.dart",
+      "accessCount": 14,
+      "lastAccessed": 1772786251471,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/profile/profile_screen.dart",
+      "accessCount": 13,
+      "lastAccessed": 1772786114359,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/conti/conti_detail_screen.dart",
+      "accessCount": 12,
+      "lastAccessed": 1772773200018,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/cuesheet/cuesheet_form_screen.dart",
+      "accessCount": 12,
+      "lastAccessed": 1772786042410,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/song/song_form_screen.dart",
+      "accessCount": 12,
+      "lastAccessed": 1772786305432,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/setlist/setlist_form_screen.dart",
+      "accessCount": 11,
+      "lastAccessed": 1772786056383,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/cuesheet/cuesheet_list_screen.dart",
+      "accessCount": 10,
+      "lastAccessed": 1772786041490,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/conti/conti_form_screen.dart",
+      "accessCount": 9,
+      "lastAccessed": 1772773179033,
+      "type": "file"
+    },
+    {
+      "path": "lib/widgets/conti_gradient_button.dart",
+      "accessCount": 9,
+      "lastAccessed": 1772786334096,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/song/song_stats_screen.dart",
+      "accessCount": 8,
+      "lastAccessed": 1772772332149,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/song/arrangement_form_screen.dart",
+      "accessCount": 7,
+      "lastAccessed": 1772772208496,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/conti/conti_list_screen.dart",
+      "accessCount": 7,
+      "lastAccessed": 1772773136022,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/setlist/setlist_list_screen.dart",
+      "accessCount": 7,
+      "lastAccessed": 1772773136762,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/setlist/setlist_notes_screen.dart",
+      "accessCount": 7,
+      "lastAccessed": 1772773181283,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/song/song_list_screen.dart",
+      "accessCount": 6,
+      "lastAccessed": 1772772157250,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/song/song_section_editor.dart",
+      "accessCount": 6,
+      "lastAccessed": 1772772227521,
+      "type": "file"
+    },
+    {
+      "path": "lib/widgets/section_flow_card.dart",
+      "accessCount": 6,
+      "lastAccessed": 1772773245303,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/team/team_create_screen.dart",
+      "accessCount": 6,
+      "lastAccessed": 1772786122966,
+      "type": "file"
+    },
+    {
+      "path": "lib",
+      "accessCount": 6,
+      "lastAccessed": 1772786246982,
+      "type": "directory"
+    },
+    {
+      "path": "lib/screens/team/team_join_screen.dart",
+      "accessCount": 6,
+      "lastAccessed": 1772786320302,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/setlist/setlist_templates_screen.dart",
+      "accessCount": 5,
+      "lastAccessed": 1772773182335,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/song",
+      "accessCount": 5,
+      "lastAccessed": 1772786278148,
+      "type": "directory"
+    },
+    {
+      "path": "lib/screens/team/team_more_tab.dart",
+      "accessCount": 5,
+      "lastAccessed": 1772786292312,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens",
+      "accessCount": 5,
+      "lastAccessed": 1772786328807,
+      "type": "directory"
+    },
+    {
+      "path": "lib/widgets/conti_section_header.dart",
+      "accessCount": 4,
+      "lastAccessed": 1772772135049,
+      "type": "file"
+    },
+    {
+      "path": "lib/widgets/conti_skeleton.dart",
+      "accessCount": 4,
+      "lastAccessed": 1772772142353,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/schedule/schedule_board_screen.dart",
+      "accessCount": 4,
+      "lastAccessed": 1772785935358,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/schedule/my_schedule_screen.dart",
+      "accessCount": 4,
+      "lastAccessed": 1772785943701,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/team/member_positions_screen.dart",
+      "accessCount": 4,
+      "lastAccessed": 1772786056850,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/home/home_screen.dart",
+      "accessCount": 4,
+      "lastAccessed": 1772786114752,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/notification/notification_list_screen.dart",
+      "accessCount": 4,
+      "lastAccessed": 1772786115518,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/team/team_members_screen.dart",
+      "accessCount": 4,
+      "lastAccessed": 1772786124178,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/setlist",
+      "accessCount": 4,
+      "lastAccessed": 1772786282244,
+      "type": "directory"
+    },
+    {
+      "path": "lib/screens/song/song_structure_tab.dart",
+      "accessCount": 3,
+      "lastAccessed": 1772772212696,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/conti",
+      "accessCount": 3,
+      "lastAccessed": 1772773235583,
+      "type": "directory"
+    },
+    {
+      "path": "lib/widgets",
+      "accessCount": 3,
+      "lastAccessed": 1772785806704,
+      "type": "directory"
+    },
+    {
+      "path": "lib/screens/schedule/schedule_matrix_screen.dart",
+      "accessCount": 3,
+      "lastAccessed": 1772785949801,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/schedule/schedule_assign_screen.dart",
+      "accessCount": 3,
+      "lastAccessed": 1772785952702,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/team/team_notices_screen.dart",
+      "accessCount": 3,
+      "lastAccessed": 1772786125715,
+      "type": "file"
+    },
+    {
+      "path": "lib/screens/schedule",
+      "accessCount": 3,
+      "lastAccessed": 1772786259790,
+      "type": "directory"
+    },
+    {
+      "path": "",
+      "accessCount": 2,
+      "lastAccessed": 1772785791547,
+      "type": "directory"
+    },
+    {
+      "path": "lib/core/constants/app_theme.dart",
+      "accessCount": 2,
+      "lastAccessed": 1772785931949,
+      "type": "file"
+    },
+    {
+      "path": "lib/widgets/conti_card.dart",
+      "accessCount": 1,
+      "lastAccessed": 1772772113673,
+      "type": "file"
+    },
+    {
+      "path": "lib/core/constants/app_text_style.dart",
+      "accessCount": 1,
+      "lastAccessed": 1772772124563,
+      "type": "file"
+    },
+    {
+      "path": "lib/widgets/conti_list_row.dart",
+      "accessCount": 1,
+      "lastAccessed": 1772772129750,
+      "type": "file"
+    },
+    {
+      "path": "lib/core/constants",
+      "accessCount": 1,
+      "lastAccessed": 1772772146175,
+      "type": "directory"
+    },
+    {
+      "path": "lib/screens/schedule/blockout_form_screen.dart",
+      "accessCount": 1,
+      "lastAccessed": 1772774143256,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

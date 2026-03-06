@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/user.dart';
+import 'package:conti_app/core/constants/app_constants.dart';
 import '../../core/constants/app_spacing.dart';
 import '../../core/constants/app_theme.dart';
 import '../../widgets/conti_card.dart';
@@ -20,15 +21,11 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: ShaderMask(
-          shaderCallback: (bounds) =>
-              AppTheme.primaryGradient.createShader(bounds),
-          child: Text(
-            'Conti',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-            ),
+        title: Text(
+          'Conti',
+          style: theme.textTheme.headlineMedium?.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w800,
           ),
         ),
         actions: [
@@ -51,8 +48,8 @@ class HomeScreen extends ConsumerWidget {
           if (teams.isEmpty) {
             return ContiEmptyState(
               icon: Icons.group_outlined,
-              title: '아직 참여한 팀이 없습니다',
-              subtitle: '새 팀을 만들거나 초대 코드로 참여하세요',
+              title: '아직 참여한 팀이 없어요',
+              subtitle: '새 팀을 만들거나 초대 코드로 참여해 보세요',
               actionLabel: '새 팀 만들기',
               onAction: () => context.push('/teams/create'),
             );
@@ -90,6 +87,7 @@ class HomeScreen extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.add_circle_outline_rounded),
                 title: const Text('새 팀 만들기'),
+                subtitle: const Text('직접 팀을 만들어 보세요'),
                 onTap: () {
                   Navigator.pop(context);
                   context.push('/teams/create');
@@ -98,6 +96,7 @@ class HomeScreen extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.group_add_outlined),
                 title: const Text('팀 참여하기'),
+                subtitle: const Text('초대 코드로 팀에 참여해요'),
                 onTap: () {
                   Navigator.pop(context);
                   context.push('/teams/join');
@@ -130,13 +129,13 @@ class _NotificationBell extends ConsumerWidget {
   }
 }
 
-// Color palette for team avatars based on name hash
-const _teamColors = [
-  [Color(0xFF7C5CFC), Color(0xFF5B8DEF)],
-  [Color(0xFFFF6B9D), Color(0xFFFF9A76)],
-  [Color(0xFF5B8DEF), Color(0xFF56CCF2)],
-  [Color(0xFFFF9A76), Color(0xFFFFC857)],
-  [Color(0xFF56CCF2), Color(0xFF7C5CFC)],
+// Accent palette for team avatars based on name hash
+const _teamAvatarColors = [
+  AppColors.primary,
+  AppColors.teal,
+  AppColors.pink,
+  AppColors.orange,
+  AppColors.purple,
 ];
 
 class _TeamCard extends StatelessWidget {
@@ -147,12 +146,8 @@ class _TeamCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorPair = _teamColors[team.teamName.hashCode.abs() % _teamColors.length];
-    final gradient = LinearGradient(
-      colors: colorPair,
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    );
+    final avatarColor = _teamAvatarColors[team.teamName.hashCode.abs() % _teamAvatarColors.length];
+    final roleDisplay = AppConstants.roleNames[team.role] ?? team.role;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -161,19 +156,19 @@ class _TeamCard extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Row(
           children: [
-            // Gradient avatar
+            // Solid color avatar
             Container(
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                gradient: gradient,
+                color: avatarColor,
                 borderRadius: AppRadius.borderMd,
               ),
               child: Center(
                 child: Text(
                   team.teamName.isNotEmpty ? team.teamName[0] : '?',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                   ),
@@ -189,22 +184,22 @@ class _TeamCard extends StatelessWidget {
                     team.teamName,
                     style: theme.textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 4),
+                  AppSpacing.gapXs,
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: team.isAdmin
-                          ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                          : theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(6),
+                          ? AppColors.primaryLight
+                          : AppColors.gray100,
+                      borderRadius: AppRadius.borderXs,
                     ),
                     child: Text(
-                      team.role,
+                      roleDisplay,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: team.isAdmin
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.onSurfaceVariant,
+                            ? AppColors.primary
+                            : AppColors.gray600,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -214,7 +209,7 @@ class _TeamCard extends StatelessWidget {
             ),
             Icon(
               Icons.chevron_right_rounded,
-              color: theme.colorScheme.onSurfaceVariant,
+              color: AppColors.gray400,
             ),
           ],
         ),

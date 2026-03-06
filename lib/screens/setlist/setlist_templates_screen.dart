@@ -36,8 +36,8 @@ class SetlistTemplatesScreen extends ConsumerWidget {
           if (templates.isEmpty) {
             return ContiEmptyState(
               icon: Icons.dashboard_customize_rounded,
-              title: '템플릿이 없습니다',
-              subtitle: '자주 사용하는 콘티 구조를 템플릿으로 저장하세요',
+              title: '아직 템플릿이 없어요',
+              subtitle: '자주 사용하는 콘티 구조를 템플릿으로 저장해 보세요',
               actionLabel: '템플릿 만들기',
               onAction: () => _showCreateDialog(context, ref),
             );
@@ -74,7 +74,7 @@ class SetlistTemplatesScreen extends ConsumerWidget {
               decoration: const InputDecoration(
                   labelText: '템플릿 이름 *', hintText: '예: 주일 예배 기본'),
             ),
-            const SizedBox(height: 12),
+            AppSpacing.gapMd,
             TextField(
               controller: descController,
               decoration: const InputDecoration(
@@ -109,7 +109,7 @@ class SetlistTemplatesScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
-                  response.error?.message ?? '템플릿 생성에 실패했습니다')),
+                  response.error?.message ?? '템플릿을 만들지 못했어요')),
         );
       }
     }
@@ -132,7 +132,7 @@ class SetlistTemplatesScreen extends ConsumerWidget {
               decoration: const InputDecoration(
                   labelText: '템플릿 이름 *', hintText: '예: 주일 예배 기본'),
             ),
-            const SizedBox(height: 12),
+            AppSpacing.gapMd,
             TextField(
               controller: descController,
               decoration: const InputDecoration(
@@ -166,7 +166,7 @@ class SetlistTemplatesScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
-                  response.error?.message ?? '템플릿 수정에 실패했습니다')),
+                  response.error?.message ?? '템플릿을 수정하지 못했어요')),
         );
       }
     }
@@ -178,7 +178,7 @@ class SetlistTemplatesScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('템플릿 삭제'),
-        content: const Text('이 템플릿을 삭제하시겠습니까?'),
+        content: const Text('이 템플릿을 삭제할까요?'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
@@ -201,7 +201,7 @@ class SetlistTemplatesScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content:
-                  Text(response.error?.message ?? '템플릿 삭제에 실패했습니다')),
+                  Text(response.error?.message ?? '템플릿을 삭제하지 못했어요')),
         );
       }
     }
@@ -233,12 +233,12 @@ class _TemplateTile extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                gradient: AppTheme.warmGradient,
+                color: AppColors.primary,
                 borderRadius: AppRadius.borderSm,
               ),
               child: const Center(
                 child: Icon(Icons.dashboard_customize_rounded,
-                    color: Colors.white, size: 20),
+                    color: AppColors.white, size: 20),
               ),
             ),
             AppSpacing.hGapMd,

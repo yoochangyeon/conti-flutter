@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import '../core/constants/app_spacing.dart';
+import '../core/constants/app_theme.dart';
 
 class ContiSkeleton extends StatelessWidget {
   final double width;
@@ -18,13 +20,13 @@ class ContiSkeleton extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Shimmer.fromColors(
-      baseColor: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.grey.shade300,
-      highlightColor: isDark ? Colors.white.withValues(alpha: 0.12) : Colors.grey.shade100,
+      baseColor: isDark ? AppColors.darkSurfaceHigh : AppColors.gray100,
+      highlightColor: isDark ? AppColors.darkSurface : AppColors.gray50,
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),
@@ -35,13 +37,13 @@ class ContiSkeleton extends StatelessWidget {
 class ContiCardSkeleton extends StatelessWidget {
   final double height;
 
-  const ContiCardSkeleton({super.key, this.height = 80});
+  const ContiCardSkeleton({super.key, this.height = 72});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: ContiSkeleton(height: height, borderRadius: 20),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 6),
+      child: ContiSkeleton(height: height, borderRadius: AppRadius.lg),
     );
   }
 }
@@ -53,7 +55,7 @@ class ContiListSkeleton extends StatelessWidget {
   const ContiListSkeleton({
     super.key,
     this.itemCount = 5,
-    this.itemHeight = 80,
+    this.itemHeight = 72,
   });
 
   @override

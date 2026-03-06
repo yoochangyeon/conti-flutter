@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
 
 import '../../models/song.dart';
 import '../../providers/providers.dart';
@@ -96,7 +97,7 @@ class _SongSectionEditorScreenState
       if (!response.success) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('저장 실패: ${response.error?.message ?? '알 수 없는 오류'}')),
+            SnackBar(content: Text('저장하지 못했어요: ${response.error?.message ?? '알 수 없는 오류'}')),
           );
         }
         return;
@@ -108,14 +109,14 @@ class _SongSectionEditorScreenState
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('곡 구조가 저장되었습니다')),
+          const SnackBar(content: Text('곡 구조를 저장했어요')),
         );
         context.pop();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('저장 실패: $e')),
+          SnackBar(content: Text('저장하지 못했어요: $e')),
         );
       }
     } finally {
@@ -149,15 +150,13 @@ class _SongSectionEditorScreenState
                         Icon(
                           Icons.queue_music_rounded,
                           size: 48,
-                          color: theme.colorScheme.primary
-                              .withValues(alpha: 0.3),
+                          color: AppColors.gray300,
                         ),
                         AppSpacing.gapLg,
                         Text(
-                          '섹션을 추가해주세요',
+                          '섹션을 추가해 보세요',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.5),
+                            color: AppColors.gray500,
                           ),
                         ),
                         AppSpacing.gapLg,
@@ -251,28 +250,27 @@ class _SectionEditCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.white.withValues(alpha: 0.04)
-            : Colors.white,
+            ? AppColors.darkSurface
+            : AppColors.white,
         borderRadius: AppRadius.borderLg,
         border: Border.all(
-          color: theme.colorScheme.outline.withValues(alpha: 0.1),
+          color: theme.colorScheme.outlineVariant,
         ),
       ),
       child: Column(
         children: [
           // Header with drag handle and delete
           Padding(
-            padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.xs, AppSpacing.xs, AppSpacing.xs, 0),
             child: Row(
               children: [
                 ReorderableDragStartListener(
                   index: index,
                   child: Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(AppSpacing.sm),
                     child: Icon(
                       Icons.drag_handle_rounded,
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.3),
+                      color: AppColors.gray400,
                     ),
                   ),
                 ),
@@ -281,14 +279,13 @@ class _SectionEditCard extends StatelessWidget {
                     initialValue: section.sectionType,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
+                          horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                       border: OutlineInputBorder(
                         borderRadius: AppRadius.borderMd,
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: theme.colorScheme.primary
-                          .withValues(alpha: 0.08),
+                      fillColor: AppColors.primaryLight,
                     ),
                     items: AppConstants.sectionTypes.map((type) {
                       return DropdownMenuItem(
@@ -311,7 +308,7 @@ class _SectionEditCard extends StatelessWidget {
                   onPressed: onRemove,
                   icon: Icon(
                     Icons.close_rounded,
-                    color: theme.colorScheme.error.withValues(alpha: 0.7),
+                    color: AppColors.error,
                     size: 20,
                   ),
                 ),
@@ -320,7 +317,7 @@ class _SectionEditCard extends StatelessWidget {
           ),
           // Fields
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, AppSpacing.md),
             child: Column(
               children: [
                 TextFormField(

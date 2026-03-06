@@ -85,7 +85,7 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
         ),
         data: (detail) {
           if (detail == null) {
-            return const Center(child: Text('콘티를 찾을 수 없습니다'));
+            return const Center(child: Text('콘티를 찾을 수 없어요'));
           }
           final items = _isReordering ? _reorderItems! : detail.items;
           final hasServicePhases = items.any((i) => i.servicePhase != null);
@@ -98,7 +98,7 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
                 padding: const EdgeInsets.fromLTRB(
                     AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 0),
                 child: ContiCard(
-                  borderGradient: AppTheme.warmGradient,
+                  borderGradient: null,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -110,7 +110,7 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
                           Icon(Icons.calendar_today_rounded,
                               size: 14,
                               color: theme.colorScheme.onSurfaceVariant),
-                          const SizedBox(width: 4),
+                          AppSpacing.hGapXs,
                           Text(
                             dateFormat.format(detail.worshipDate),
                             style: theme.textTheme.bodySmall,
@@ -118,14 +118,13 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
                         ],
                       ),
                       if (detail.worshipType != null) ...[
-                        const SizedBox(height: 4),
+                        AppSpacing.gapXs,
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.primary
-                                .withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            color: AppColors.primaryLight,
+                            borderRadius: AppRadius.borderSm,
                           ),
                           child: Text(
                             detail.worshipTypeDisplayName ??
@@ -228,9 +227,9 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
                 child: items.isEmpty
                     ? ContiEmptyState(
                         icon: Icons.queue_music_rounded,
-                        title: '항목이 없습니다',
-                        subtitle: '곡이나 항목을 추가해주세요',
-                        actionLabel: '항목 추가',
+                        title: '아직 항목이 없어요',
+                        subtitle: '곡이나 항목을 추가해 보세요',
+                        actionLabel: '항목 추가하기',
                         onAction: () => _showAddItemDialog(context, ref),
                       )
                     : _isReordering
@@ -295,9 +294,9 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
 
     Color phaseColor(String phase) {
       switch (phase) {
-        case 'BEFORE': return Colors.orange;
-        case 'DURING': return theme.colorScheme.primary;
-        case 'AFTER': return Colors.teal;
+        case 'BEFORE': return AppColors.orange;
+        case 'DURING': return AppColors.primary;
+        case 'AFTER': return AppColors.teal;
         default: return theme.colorScheme.onSurfaceVariant;
       }
     }
@@ -311,8 +310,8 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
               padding: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.xs),
               child: Row(children: [
                 Container(width: 4, height: 16, decoration: BoxDecoration(
-                  color: phaseColor(phase), borderRadius: BorderRadius.circular(2))),
-                const SizedBox(width: 8),
+                  color: phaseColor(phase), borderRadius: AppRadius.borderXxs)),
+                AppSpacing.hGapSm,
                 Text(phaseLabels[phase]!, style: theme.textTheme.titleSmall?.copyWith(
                   color: phaseColor(phase), fontWeight: FontWeight.w700)),
               ]),
@@ -355,7 +354,7 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
           (teamId: widget.teamId, setlistId: widget.setlistId)));
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response.error?.message ?? '순서 변경에 실패했습니다')),
+        SnackBar(content: Text(response.error?.message ?? '순서를 변경하지 못했어요')),
       );
     }
   }
@@ -369,7 +368,7 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
           (teamId: widget.teamId, setlistId: widget.setlistId)));
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response.error?.message ?? '곡 제거에 실패했습니다')),
+        SnackBar(content: Text(response.error?.message ?? '곡을 제거하지 못했어요')),
       );
     }
   }
@@ -410,7 +409,7 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
               _showAddCustomItemDialog(context, ref);
             },
           ),
-          const SizedBox(height: 16),
+          AppSpacing.gapLg,
         ],
       ),
     );
@@ -421,7 +420,7 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('헤더 추가'),
+        title: const Text('헤더 추가하기'),
         content: TextField(
           controller: titleController,
           decoration: const InputDecoration(labelText: '헤더 제목', hintText: '예: 찬양 시간'),
@@ -462,7 +461,7 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
               items: types.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
               onChanged: (v) => setDialogState(() => selectedType = v ?? selectedType),
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             TextField(controller: titleController, decoration: const InputDecoration(labelText: '제목', hintText: '예: 대표 기도')),
           ]),
           actions: [
@@ -494,7 +493,7 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
           content: Column(mainAxisSize: MainAxisSize.min, children: [
             TextField(controller: titleController, decoration: const InputDecoration(
               labelText: '새 콘티 제목 (선택)', hintText: '비워두면 원본 제목 사용')),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             InkWell(
               onTap: () async {
                 final picked = await showDatePicker(context: ctx, initialDate: selectedDate,
@@ -526,7 +525,7 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
       );
       if (response.success && context.mounted) {
         ref.invalidate(setlistsProvider(SetlistListParams(teamId: widget.teamId)));
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('콘티가 복사되었습니다')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('콘티를 복사했어요')));
       }
     }
   }
@@ -536,7 +535,7 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('콘티 삭제'),
-        content: const Text('이 콘티를 삭제하시겠습니까?'),
+        content: const Text('이 콘티를 삭제할까요?'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
@@ -559,7 +558,7 @@ class _SetlistDetailScreenState extends ConsumerState<SetlistDetailScreen> {
           context.pop();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(response.error?.message ?? '삭제에 실패했습니다')),
+            SnackBar(content: Text(response.error?.message ?? '삭제하지 못했어요')),
           );
         }
       }
@@ -662,8 +661,7 @@ class _SetlistItemTile extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                gradient: itemColor != null ? null : AppTheme.primaryGradient,
-                color: itemColor,
+                color: itemColor ?? AppColors.primary,
                 borderRadius: AppRadius.borderSm,
               ),
               child: Center(
@@ -671,14 +669,14 @@ class _SetlistItemTile extends StatelessWidget {
                     ? Text(
                         '${index + 1}',
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: AppColors.white,
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
                         ),
                       )
                     : Icon(
                         _itemTypeIcon(item.itemType),
-                        color: Colors.white,
+                        color: AppColors.white,
                         size: 18,
                       ),
               ),
@@ -715,21 +713,20 @@ class _SetlistItemTile extends StatelessWidget {
             if (item.songKey != null && isSong) ...[
               Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 4),
+                    horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.secondary
-                      .withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.teal.withValues(alpha: 0.1),
+                  borderRadius: AppRadius.borderSm,
                 ),
                 child: Text(
                   item.songKey!,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.secondary,
+                    color: AppColors.teal,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
-              const SizedBox(width: 4),
+              AppSpacing.hGapXs,
             ],
             if (item.durationMinutes != null && !isSong) ...[
               Text(
@@ -738,7 +735,7 @@ class _SetlistItemTile extends StatelessWidget {
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(width: 4),
+              AppSpacing.hGapXs,
             ],
             if (isReordering)
               Icon(Icons.drag_handle_rounded,
@@ -746,7 +743,7 @@ class _SetlistItemTile extends StatelessWidget {
             else if (onRemove != null)
               IconButton(
                 icon: Icon(Icons.remove_circle_outline_rounded,
-                    color: theme.colorScheme.error.withValues(alpha: 0.7)),
+                    color: AppColors.error),
                 onPressed: onRemove,
                 iconSize: 20,
               ),
@@ -775,11 +772,11 @@ class _ScheduleBadge extends ConsumerWidget {
       data: (schedules) {
         if (schedules.isEmpty) return const SizedBox.shrink();
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: AppPadding.paddingBadge,
           margin: const EdgeInsets.only(right: 4),
           decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            color: AppColors.primaryLight,
+            borderRadius: AppRadius.borderSm,
           ),
           child: Text(
             '${schedules.length}명',
@@ -831,9 +828,8 @@ class _AddSongSheetState extends State<_AddSongSheet> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurfaceVariant
-                      .withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
+                  color: AppColors.gray300,
+                  borderRadius: AppRadius.borderXxs,
                 ),
               ),
             ),
@@ -842,7 +838,7 @@ class _AddSongSheetState extends State<_AddSongSheet> {
               child: TextField(
                 controller: _searchController,
                 decoration: const InputDecoration(
-                  hintText: '곡 검색...',
+                  hintText: '곡 이름으로 검색해 보세요',
                   prefixIcon: Icon(Icons.search_rounded),
                 ),
                 onSubmitted: (v) => setState(
@@ -858,7 +854,7 @@ class _AddSongSheetState extends State<_AddSongSheet> {
                   if (paged.content.isEmpty) {
                     return ContiEmptyState(
                       icon: Icons.music_off_rounded,
-                      title: '곡이 없습니다',
+                      title: '곡이 없어요',
                     );
                   }
                   return ListView.builder(
@@ -896,12 +892,12 @@ class _AddSongSheetState extends State<_AddSongSheet> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('곡이 추가되었습니다')),
+          const SnackBar(content: Text('곡을 추가했어요')),
         );
       }
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response.error?.message ?? '곡 추가에 실패했습니다')),
+        SnackBar(content: Text(response.error?.message ?? '곡을 추가하지 못했어요')),
       );
     }
   }

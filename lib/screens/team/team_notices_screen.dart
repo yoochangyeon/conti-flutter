@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/team.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
 
 class TeamNoticesScreen extends ConsumerWidget {
   final int teamId;
@@ -32,7 +33,7 @@ class TeamNoticesScreen extends ConsumerWidget {
           : null,
       body: noticesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('오류: $e')),
+        error: (e, _) => Center(child: Text('오류가 발생했어요: $e')),
         data: (notices) {
           if (notices.isEmpty) {
             return Center(
@@ -40,11 +41,11 @@ class TeamNoticesScreen extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.campaign_outlined,
-                      size: 64, color: theme.colorScheme.outline),
+                      size: 64, color: AppColors.gray300),
                   AppSpacing.gapLg,
-                  Text('아직 공지사항이 없습니다',
+                  Text('아직 공지사항이 없어요',
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                        color: AppColors.gray500,
                       )),
                 ],
               ),
@@ -92,15 +93,15 @@ class TeamNoticesScreen extends ConsumerWidget {
                 controller: titleCtrl,
                 decoration: const InputDecoration(
                   labelText: '제목',
-                  hintText: '공지 제목을 입력하세요',
+                  hintText: '공지 제목을 입력해 주세요',
                 ),
               ),
-              const SizedBox(height: 12),
+              AppSpacing.gapMd,
               TextField(
                 controller: contentCtrl,
                 decoration: const InputDecoration(
                   labelText: '내용',
-                  hintText: '공지 내용을 입력하세요',
+                  hintText: '공지 내용을 입력해 주세요',
                 ),
                 maxLines: 5,
               ),
@@ -147,13 +148,14 @@ class TeamNoticesScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('공지사항 삭제'),
-        content: const Text('이 공지사항을 삭제하시겠습니까?'),
+        content: const Text('이 공지사항을 삭제할까요?'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               child: const Text('취소')),
           TextButton(
               onPressed: () => Navigator.pop(ctx, true),
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
               child: const Text('삭제')),
         ],
       ),
@@ -198,7 +200,7 @@ class _NoticeCard extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: 6),
                     child: Icon(Icons.push_pin,
-                        size: 16, color: theme.colorScheme.primary),
+                        size: 16, color: AppColors.primary),
                   ),
                 Expanded(
                   child: Text(
@@ -243,7 +245,7 @@ class _NoticeCard extends StatelessWidget {
               Text(
                 notice.content!,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+                  color: AppColors.gray600,
                 ),
               ),
             ],
@@ -253,14 +255,14 @@ class _NoticeCard extends StatelessWidget {
                 Text(
                   notice.authorName,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.outline,
+                    color: AppColors.gray400,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   _formatDate(notice.createdAt),
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.outline,
+                    color: AppColors.gray400,
                   ),
                 ),
               ],

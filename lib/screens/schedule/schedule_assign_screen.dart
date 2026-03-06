@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/schedule.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
 import '../../widgets/conti_card.dart';
 import '../../widgets/conti_gradient_button.dart';
 
@@ -33,7 +34,7 @@ class _ScheduleAssignScreenState extends ConsumerState<ScheduleAssignScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('멤버 배정')),
+      appBar: AppBar(title: const Text('봉사 배정')),
       body: Column(
         children: [
           // Position selector
@@ -42,10 +43,10 @@ class _ScheduleAssignScreenState extends ConsumerState<ScheduleAssignScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('포지션 선택', style: theme.textTheme.titleSmall),
+                Text('포지션을 선택해 주세요', style: theme.textTheme.titleSmall),
                 AppSpacing.gapSm,
                 Wrap(
-                  spacing: 8,
+                  spacing: AppSpacing.sm,
                   runSpacing: 8,
                   children: MemberPosition.values.map((pos) {
                     final isSelected = _selectedPosition == pos;
@@ -54,9 +55,8 @@ class _ScheduleAssignScreenState extends ConsumerState<ScheduleAssignScreen> {
                       selected: isSelected,
                       onSelected: (_) =>
                           setState(() => _selectedPosition = pos),
-                      selectedColor:
-                          theme.colorScheme.primary.withValues(alpha: 0.2),
-                      checkmarkColor: theme.colorScheme.primary,
+                      selectedColor: AppColors.primaryLight,
+                      checkmarkColor: AppColors.primary,
                     );
                   }).toList(),
                 ),
@@ -70,13 +70,16 @@ class _ScheduleAssignScreenState extends ConsumerState<ScheduleAssignScreen> {
           Expanded(
             child: _selectedPosition == null
                 ? Center(
-                    child: Text('포지션을 선택하세요',
+                    child: Text('포지션을 먼저 선택해 주세요',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant)))
+                            color: AppColors.gray500)))
                 : membersAsync.when(
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
-                    error: (e, _) => Center(child: Text('오류: $e')),
+                    error: (e, _) => Center(
+                        child: Text('오류가 발생했어요: $e',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                                color: AppColors.gray600))),
                     data: (members) {
                       return ListView.builder(
                         padding: const EdgeInsets.symmetric(
@@ -113,8 +116,7 @@ class _ScheduleAssignScreenState extends ConsumerState<ScheduleAssignScreen> {
                                 children: [
                                   CircleAvatar(
                                     radius: 18,
-                                    backgroundColor:
-                                        theme.colorScheme.primaryContainer,
+                                    backgroundColor: AppColors.primaryLight,
                                     backgroundImage:
                                         member.profileImage != null
                                             ? NetworkImage(
@@ -125,9 +127,8 @@ class _ScheduleAssignScreenState extends ConsumerState<ScheduleAssignScreen> {
                                             member.userName.isNotEmpty
                                                 ? member.userName[0]
                                                 : '?',
-                                            style: TextStyle(
-                                                color: theme.colorScheme
-                                                    .onPrimaryContainer))
+                                            style: const TextStyle(
+                                                color: AppColors.primary))
                                         : null,
                                   ),
                                   AppSpacing.hGapMd,
@@ -159,8 +160,7 @@ class _ScheduleAssignScreenState extends ConsumerState<ScheduleAssignScreen> {
                                       child: Icon(
                                         Icons.verified_rounded,
                                         size: 16,
-                                        color: Colors.green
-                                            .withValues(alpha: 0.8),
+                                        color: AppColors.success,
                                       ),
                                     ),
                                   Checkbox(
@@ -195,14 +195,16 @@ class _ScheduleAssignScreenState extends ConsumerState<ScheduleAssignScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${_assignments.length}명 배정 예정',
-                    style: theme.textTheme.labelMedium,
+                    '${_assignments.length}명 배정 예정이에요',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: AppColors.gray600,
+                    ),
                   ),
                   AppSpacing.gapSm,
                   SizedBox(
                     width: double.infinity,
                     child: ContiGradientButton(
-                      label: '저장',
+                      label: '배정하기',
                       isLoading: _isSaving,
                       onPressed: _isSaving ? null : _save,
                     ),
@@ -232,12 +234,12 @@ class _ScheduleAssignScreenState extends ConsumerState<ScheduleAssignScreen> {
             (teamId: widget.teamId, setlistId: widget.setlistId)));
         context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('멤버가 배정되었습니다')),
+          const SnackBar(content: Text('멤버가 배정되었어요')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(response.error?.message ?? '배정에 실패했습니다')),
+              content: Text(response.error?.message ?? '배정에 실패했어요')),
         );
       }
     }

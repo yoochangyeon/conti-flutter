@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/models/team.dart';
+import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_theme.dart';
 
 class TeamCreateScreen extends ConsumerStatefulWidget {
   const TeamCreateScreen({super.key});
@@ -46,11 +48,11 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
         ref.invalidate(userTeamsProvider);
         context.go('/home');
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('팀이 생성되었습니다')),
+          const SnackBar(content: Text('팀이 만들어졌어요!')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.error?.message ?? '팀 생성 실패')),
+          SnackBar(content: Text(response.error?.message ?? '팀 생성에 실패했어요')),
         );
       }
     }
@@ -58,6 +60,8 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('새 팀 만들기')),
       body: Form(
@@ -65,24 +69,31 @@ class _TeamCreateScreenState extends ConsumerState<TeamCreateScreen> {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
+            Text(
+              '함께할 팀을 만들어 보세요',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: AppColors.gray600,
+              ),
+            ),
+            AppSpacing.gapXxl,
             TextFormField(
               controller: _nameController,
               decoration: const InputDecoration(
                 labelText: '팀 이름',
                 hintText: '예: 주일 예배팀',
               ),
-              validator: (v) => v == null || v.trim().isEmpty ? '팀 이름을 입력해주세요' : null,
+              validator: (v) => v == null || v.trim().isEmpty ? '팀 이름을 입력해 주세요' : null,
             ),
-            const SizedBox(height: 16),
+            AppSpacing.gapLg,
             TextFormField(
               controller: _descController,
               decoration: const InputDecoration(
                 labelText: '설명 (선택)',
-                hintText: '팀에 대한 설명을 입력해주세요',
+                hintText: '팀에 대한 간단한 소개를 적어 주세요',
               ),
               maxLines: 3,
             ),
-            const SizedBox(height: 32),
+            AppSpacing.gapXxxl,
             FilledButton(
               onPressed: _isLoading ? null : _submit,
               child: _isLoading

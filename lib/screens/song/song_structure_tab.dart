@@ -52,9 +52,9 @@ class _SongStructureTabState extends State<SongStructureTab> {
     if (widget.sections.isEmpty) {
       return ContiEmptyState(
         icon: Icons.queue_music_rounded,
-        title: '곡 구조가 없습니다',
-        subtitle: '섹션을 추가하여 곡의 구조를 정리해보세요',
-        actionLabel: '구조 추가',
+        title: '아직 곡 구조가 없어요',
+        subtitle: '섹션을 추가해서 곡의 흐름을 정리해 보세요',
+        actionLabel: '구조 추가하기',
         onAction: widget.onEdit,
       );
     }
@@ -122,10 +122,10 @@ class _TransposeBar extends StatelessWidget {
         vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        color: theme.colorScheme.surfaceContainerLow,
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+            color: theme.colorScheme.outlineVariant,
           ),
         ),
       ),
@@ -158,7 +158,7 @@ class _TransposeBar extends StatelessWidget {
           const Spacer(),
           if (capoInfo.capo > 0)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: AppPadding.paddingBadge,
               decoration: BoxDecoration(
                 color: theme.colorScheme.tertiaryContainer,
                 borderRadius: AppRadius.borderSm,

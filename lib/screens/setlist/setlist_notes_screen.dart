@@ -67,7 +67,7 @@ class _SetlistNotesScreenState extends ConsumerState<SetlistNotesScreen> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               itemCount: _positionFilters.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              separatorBuilder: (_, _) => AppSpacing.hGapSm,
               itemBuilder: (context, index) {
                 final filter = _positionFilters[index];
                 final isSelected = _selectedPosition == filter.value;
@@ -99,7 +99,7 @@ class _SetlistNotesScreenState extends ConsumerState<SetlistNotesScreen> {
                         Icon(Icons.note_outlined,
                             size: 64, color: theme.colorScheme.outline),
                         AppSpacing.gapLg,
-                        Text('아직 노트가 없습니다',
+                        Text('아직 노트가 없어요',
                             style: theme.textTheme.bodyLarge?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             )),
@@ -148,7 +148,7 @@ class _SetlistNotesScreenState extends ConsumerState<SetlistNotesScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: Text(note == null ? '노트 작성' : '노트 수정'),
+          title: Text(note == null ? '노트 작성하기' : '노트 수정하기'),
           content: SizedBox(
             width: double.maxFinite,
             child: Column(
@@ -169,12 +169,12 @@ class _SetlistNotesScreenState extends ConsumerState<SetlistNotesScreen> {
                     setDialogState(() => selectedPosition = value);
                   },
                 ),
-                const SizedBox(height: 12),
+                AppSpacing.gapMd,
                 TextField(
                   controller: contentCtrl,
                   decoration: const InputDecoration(
                     labelText: '내용',
-                    hintText: '노트 내용을 입력하세요',
+                    hintText: '노트 내용을 입력해 주세요',
                   ),
                   maxLines: 5,
                 ),
@@ -188,7 +188,7 @@ class _SetlistNotesScreenState extends ConsumerState<SetlistNotesScreen> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text(note == null ? '작성' : '수정'),
+              child: Text(note == null ? '작성하기' : '수정하기'),
             ),
           ],
         ),
@@ -199,7 +199,7 @@ class _SetlistNotesScreenState extends ConsumerState<SetlistNotesScreen> {
       final api = ref.read(apiClientProvider);
       final data = {
         'content': contentCtrl.text,
-        if (selectedPosition != null) 'position': selectedPosition,
+        'position': ?selectedPosition,
       };
       if (note == null) {
         await api.post(
@@ -223,7 +223,7 @@ class _SetlistNotesScreenState extends ConsumerState<SetlistNotesScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('노트 삭제'),
-        content: const Text('이 노트를 삭제하시겠습니까?'),
+        content: const Text('이 노트를 삭제할까요?'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
@@ -275,11 +275,10 @@ class _NoteCard extends StatelessWidget {
               children: [
                 if (note.position != null)
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 2),
+                    padding: AppPadding.paddingBadge,
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: AppRadius.borderXs,
                     ),
                     child: Text(
                       _positionLabel(note.position!),

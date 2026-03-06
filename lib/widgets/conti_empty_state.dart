@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../core/constants/app_icons.dart';
 import '../core/constants/app_spacing.dart';
+import '../core/constants/app_theme.dart';
 
 class ContiEmptyState extends StatelessWidget {
   final IconData icon;
@@ -19,7 +21,7 @@ class ContiEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Center(
       child: Padding(
@@ -28,37 +30,47 @@ class ContiEmptyState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 88,
+              height: 88,
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                color: isDark
+                    ? AppColors.darkSurfaceHigh
+                    : AppColors.gray100,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                size: 36,
-                color: theme.colorScheme.primary.withValues(alpha: 0.6),
+                size: AppIconSize.xl,
+                color: AppColors.gray400,
               ),
             ),
             AppSpacing.gapXl,
             Text(
               title,
-              style: theme.textTheme.titleMedium,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: isDark ? AppColors.gray200 : AppColors.gray800,
+              ),
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
               AppSpacing.gapSm,
               Text(
                 subtitle!,
-                style: theme.textTheme.bodySmall,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.gray500,
+                  height: 1.5,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
             if (actionLabel != null && onAction != null) ...[
-              AppSpacing.gapXl,
+              AppSpacing.gapXxl,
               FilledButton.icon(
                 onPressed: onAction,
-                icon: const Icon(Icons.add, size: 18),
+                icon: const Icon(Icons.add_rounded, size: 18),
                 label: Text(actionLabel!),
               ),
             ],

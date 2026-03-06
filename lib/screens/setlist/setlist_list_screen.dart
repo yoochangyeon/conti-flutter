@@ -68,9 +68,9 @@ class _SetlistListScreenState extends ConsumerState<SetlistListScreen> {
           if (paged.content.isEmpty) {
             return ContiEmptyState(
               icon: Icons.queue_music_rounded,
-              title: '등록된 콘티가 없습니다',
-              subtitle: '새 콘티를 추가하여 세트리스트를 관리하세요',
-              actionLabel: '콘티 추가',
+              title: '아직 콘티가 없어요',
+              subtitle: '새 콘티를 만들어 예배를 준비해 보세요',
+              actionLabel: '콘티 만들기',
               onAction: () =>
                   context.push('/teams/${widget.teamId}/setlists/create'),
             );
@@ -101,15 +101,15 @@ class _SetlistListScreenState extends ConsumerState<SetlistListScreen> {
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                                  horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                               decoration: BoxDecoration(
-                                gradient: AppTheme.primaryGradient,
-                                borderRadius: BorderRadius.circular(8),
+                                color: AppColors.primary,
+                                borderRadius: AppRadius.borderSm,
                               ),
                               child: Text(
                                 '${setlist.songCount}곡',
                                 style: const TextStyle(
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -117,27 +117,25 @@ class _SetlistListScreenState extends ConsumerState<SetlistListScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        AppSpacing.gapSm,
                         Row(
                           children: [
                             Icon(Icons.calendar_today_rounded,
                                 size: 14,
                                 color:
                                     theme.colorScheme.onSurfaceVariant),
-                            const SizedBox(width: 4),
+                            AppSpacing.hGapXs,
                             Text(
                               dateFormat.format(setlist.worshipDate),
                               style: theme.textTheme.bodySmall,
                             ),
                             if (setlist.worshipType != null) ...[
-                              const SizedBox(width: 12),
+                              AppSpacing.hGapMd,
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 2),
+                                padding: AppPadding.paddingBadge,
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary
-                                      .withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(6),
+                                  color: AppColors.primaryLight,
+                                  borderRadius: AppRadius.borderXs,
                                 ),
                                 child: Text(
                                   setlist.worshipTypeDisplayName ??

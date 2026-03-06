@@ -53,7 +53,7 @@ class _SongListScreenState extends ConsumerState<SongListScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: '제목 또는 아티스트 검색',
+                hintText: '제목이나 아티스트로 검색해 보세요',
                 prefixIcon: const Icon(Icons.search_rounded),
                 suffixIcon: _keyword != null
                     ? IconButton(
@@ -79,10 +79,10 @@ class _SongListScreenState extends ConsumerState<SongListScreen> {
                 if (paged.content.isEmpty) {
                   return ContiEmptyState(
                     icon: Icons.music_off_rounded,
-                    title: _keyword != null ? '검색 결과가 없습니다' : '등록된 찬양이 없습니다',
+                    title: _keyword != null ? '검색 결과가 없어요' : '아직 등록된 찬양이 없어요',
                     subtitle:
-                        _keyword != null ? '다른 키워드로 검색해보세요' : '새로운 찬양을 추가해보세요',
-                    actionLabel: _keyword == null ? '찬양 추가' : null,
+                        _keyword != null ? '다른 키워드로 검색해 보세요' : '새로운 찬양을 추가해 보세요',
+                    actionLabel: _keyword == null ? '찬양 추가하기' : null,
                     onAction: _keyword == null
                         ? () => context
                             .push('/teams/${widget.teamId}/songs/create')
@@ -130,21 +130,14 @@ class _SongTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     // Generate a gradient color based on the song title
-    final colorIndex = song.title.hashCode.abs() % 5;
-    final avatarColors = [
-      [AppTheme.primaryColor, AppTheme.secondaryColor],
-      [AppTheme.tertiaryColor, const Color(0xFFFF9A76)],
-      [AppTheme.secondaryColor, const Color(0xFF56CCF2)],
-      [const Color(0xFFFF9A76), const Color(0xFFFFC857)],
-      [const Color(0xFF56CCF2), AppTheme.primaryColor],
-    ];
+    final colorIndex = song.title.hashCode.abs() % AppColors.accentPalette.length;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: ContiCard(
         onTap: onTap,
         padding: const EdgeInsets.all(AppSpacing.md),
-        borderRadius: 16,
+        borderRadius: AppRadius.lg,
         child: Row(
           children: [
             // Title initial avatar
@@ -152,18 +145,14 @@ class _SongTile extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: avatarColors[colorIndex],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: AppColors.accentPalette[colorIndex],
                 borderRadius: AppRadius.borderMd,
               ),
               child: Center(
                 child: Text(
                   song.title.isNotEmpty ? song.title[0] : '?',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
@@ -183,7 +172,7 @@ class _SongTile extends StatelessWidget {
                     style: theme.textTheme.titleSmall,
                   ),
                   if (song.artist != null || song.originalKey != null) ...[
-                    const SizedBox(height: 2),
+                    AppSpacing.gapXxs,
                     Text(
                       [
                         if (song.artist != null) song.artist!,
@@ -202,12 +191,10 @@ class _SongTile extends StatelessWidget {
             if (song.tags.isNotEmpty) ...[
               AppSpacing.hGapSm,
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: AppPadding.paddingBadge,
                 decoration: BoxDecoration(
-                  color:
-                      theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.primaryLight,
+                  borderRadius: AppRadius.borderSm,
                 ),
                 child: Text(
                   song.tags.first,

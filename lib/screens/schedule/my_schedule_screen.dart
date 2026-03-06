@@ -32,7 +32,7 @@ class MyScheduleScreen extends ConsumerWidget {
           if (schedules.isEmpty) {
             return const ContiEmptyState(
               icon: Icons.event_note_rounded,
-              title: '예정된 스케줄이 없습니다',
+              title: '예정된 스케줄이 없어요',
             );
           }
 
@@ -68,19 +68,19 @@ class MyScheduleScreen extends ConsumerWidget {
       '/teams/$teamId/schedules/$scheduleId/respond',
       data: {
         'accept': accept,
-        if (reason != null) 'declinedReason': reason,
+        'declinedReason': ?reason,
       },
     );
     if (response.success) {
       ref.invalidate(mySchedulesProvider(teamId));
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(accept ? '수락했습니다' : '거절했습니다')),
+          SnackBar(content: Text(accept ? '수락했어요' : '거절했어요')),
         );
       }
     } else if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response.error?.message ?? '요청에 실패했습니다')),
+        SnackBar(content: Text(response.error?.message ?? '요청에 실패했어요')),
       );
     }
   }
@@ -113,13 +113,13 @@ class _MyScheduleTile extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  gradient: AppTheme.primaryGradient,
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.primary,
+                  borderRadius: AppRadius.borderSm,
                 ),
                 child: Text(
                   schedule.positionDisplayName,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -135,7 +135,7 @@ class _MyScheduleTile extends StatelessWidget {
             Text(
               '거절 사유: ${schedule.declinedReason}',
               style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.error),
+                  ?.copyWith(color: AppColors.error),
             ),
             AppSpacing.gapSm,
           ],
@@ -146,19 +146,17 @@ class _MyScheduleTile extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: () => _showDeclineDialog(context),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: theme.colorScheme.error,
-                      side: BorderSide(
-                          color: theme.colorScheme.error
-                              .withValues(alpha: 0.5)),
+                      foregroundColor: AppColors.error,
+                      side: BorderSide(color: AppColors.error.withValues(alpha: 0.5)),
                     ),
-                    child: const Text('거절'),
+                    child: const Text('거절할게요'),
                   ),
                 ),
                 AppSpacing.hGapMd,
                 Expanded(
                   child: FilledButton(
                     onPressed: () => onRespond(true, null),
-                    child: const Text('수락'),
+                    child: const Text('수락할게요'),
                   ),
                 ),
               ],
@@ -176,7 +174,7 @@ class _MyScheduleTile extends StatelessWidget {
         title: const Text('거절 사유'),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(hintText: '사유를 입력하세요 (선택)'),
+          decoration: const InputDecoration(hintText: '사유를 입력해 주세요 (선택)'),
           maxLines: 3,
         ),
         actions: [
@@ -188,6 +186,7 @@ class _MyScheduleTile extends StatelessWidget {
               onRespond(false,
                   controller.text.trim().isEmpty ? null : controller.text.trim());
             },
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: const Text('거절'),
           ),
         ],
@@ -204,25 +203,24 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     Color color;
     switch (status) {
       case 'ACCEPTED':
-        color = Colors.green;
+        color = AppColors.success;
         break;
       case 'DECLINED':
-        color = theme.colorScheme.error;
+        color = AppColors.error;
         break;
       case 'PENDING':
       default:
-        color = theme.colorScheme.onSurfaceVariant;
+        color = AppColors.gray500;
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(6),
+        color: color.withValues(alpha: 0.12),
+        borderRadius: AppRadius.borderXs,
       ),
       child: Text(
         displayName,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:conti_app/models/notification.dart';
 import 'package:conti_app/providers/providers.dart';
 import 'package:conti_app/core/constants/app_spacing.dart';
+import 'package:conti_app/core/constants/app_theme.dart';
 import 'package:conti_app/widgets/conti_empty_state.dart';
 import 'package:conti_app/widgets/conti_skeleton.dart';
 
@@ -53,13 +54,18 @@ class _NotificationListScreenState
           padding: EdgeInsets.only(top: AppSpacing.lg),
           child: ContiListSkeleton(itemCount: 5, itemHeight: 80),
         ),
-        error: (e, _) => Center(child: Text('오류: $e')),
+        error: (e, _) => Center(
+          child: Text('오류가 발생했어요: $e',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.gray600,
+                  )),
+        ),
         data: (pagedData) {
           if (pagedData.content.isEmpty) {
             return const ContiEmptyState(
               icon: Icons.notifications_none_rounded,
-              title: '알림이 없습니다',
-              subtitle: '새로운 알림이 오면 여기에 표시됩니다',
+              title: '알림이 없어요',
+              subtitle: '새로운 알림이 오면 여기에 표시돼요',
             );
           }
           return RefreshIndicator(
@@ -105,27 +111,27 @@ class _NotificationTile extends StatelessWidget {
     };
   }
 
-  Color _colorForType(String type, ThemeData theme) {
+  Color _colorForType(String type) {
     return switch (type) {
-      'SCHEDULE_ASSIGNED' => theme.colorScheme.primary,
-      'SCHEDULE_RESPONSE' => Colors.green,
-      'SCHEDULE_REMINDER' => Colors.orange,
-      'SETLIST_UPDATED' => theme.colorScheme.tertiary,
-      _ => theme.colorScheme.secondary,
+      'SCHEDULE_ASSIGNED' => AppColors.primary,
+      'SCHEDULE_RESPONSE' => AppColors.success,
+      'SCHEDULE_REMINDER' => AppColors.warning,
+      'SETLIST_UPDATED' => AppColors.purple,
+      _ => AppColors.teal,
     };
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final iconColor = _colorForType(notification.type, theme);
+    final iconColor = _colorForType(notification.type);
     final timeAgo = _formatTimeAgo(notification.createdAt);
 
     return ListTile(
       onTap: onTap,
       tileColor: notification.isRead
           ? null
-          : theme.colorScheme.primaryContainer.withValues(alpha: 0.15),
+          : AppColors.primaryLight.withValues(alpha: 0.5),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
         vertical: AppSpacing.sm,
@@ -147,20 +153,20 @@ class _NotificationTile extends StatelessWidget {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 2),
+          AppSpacing.gapXxs,
           Text(
             notification.message,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+              color: AppColors.gray500,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
+          AppSpacing.gapXs,
           Text(
             timeAgo,
             style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.outline,
+              color: AppColors.gray400,
             ),
           ),
         ],
@@ -170,8 +176,8 @@ class _NotificationTile extends StatelessWidget {
           : Container(
               width: 8,
               height: 8,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary,
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
                 shape: BoxShape.circle,
               ),
             ),
